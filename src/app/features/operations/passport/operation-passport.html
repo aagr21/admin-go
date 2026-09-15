@@ -1,0 +1,188 @@
+<section class="ag-page">
+  @if (operation(); as op) {
+    <header class="ag-page__head">
+      <div>
+        <p class="crumb"><a routerLink="/operations">Operaciones</a> / Pasaporte Digital</p>
+        <h1 class="ag-page__title ag-mono">{{ op.code }}</h1>
+        <p class="ag-page__sub">
+          {{ op.type }} · {{ op.product }} · {{ op.origin }} → {{ op.destination }}
+        </p>
+      </div>
+      <div class="ag-row">
+        <app-status-badge [label]="op.status" [tone]="toneForStatus(op.status)" />
+        <span class="qr" title="Identificador seguro de la operación (§24)">QR</span>
+      </div>
+    </header>
+
+    <div class="passport">
+      <article class="ag-card">
+        <p class="ag-card__title">Datos de la operación</p>
+        <dl class="meta">
+          <div>
+            <dt>Volumen programado</dt>
+            <dd>{{ formatLiters(op.scheduledVolume) }}</dd>
+          </div>
+          <div>
+            <dt>Volumen documentado</dt>
+            <dd>{{ formatLiters(op.documentedVolume) }}</dd>
+          </div>
+          <div>
+            <dt>Volumen recibido</dt>
+            <dd>{{ formatLiters(op.receivedVolume) }}</dd>
+          </div>
+          <div>
+            <dt>Cisterna / placa</dt>
+            <dd class="ag-mono">{{ op.cisternPlate }}</dd>
+          </div>
+          <div>
+            <dt>Conductor</dt>
+            <dd>{{ driver()?.fullName ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Planta</dt>
+            <dd>{{ plant()?.code ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Estación destino</dt>
+            <dd>{{ station()?.code ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Tanque</dt>
+            <dd>{{ tank()?.code ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Precintos</dt>
+            <dd class="ag-mono">{{ op.sealCodes.join(', ') }}</dd>
+          </div>
+          <div>
+            <dt>Programada</dt>
+            <dd>{{ formatDateTime(op.scheduledAt) }}</dd>
+          </div>
+          <div>
+            <dt>Última actualización</dt>
+            <dd>{{ formatDateTime(op.updatedAt) }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="ag-card">
+        <p class="ag-card__title">Trazabilidad de la operación</p>
+        <p class="ag-card__sub">
+          ORIGEN → PRODUCTO → VOLUMEN → DOCUMENTOS → CISTERNA → TRANSPORTE → DESTINO → RECEPCIÓN →
+          TANQUE → SALIDA/VENTA
+        </p>
+        <ol class="timeline">
+          @for (stage of stages(); track stage.label) {
+            <li class="timeline__item">
+              <span class="timeline__dot"></span>
+              <div class="timeline__body">
+                <strong>{{ stage.label }}</strong>
+                <span class="timeline__value">{{ stage.value }}</span>
+                <small class="timeline__detail">{{ stage.detail }}</small>
+              </div>
+            </li>
+          }
+        </ol>
+      </article>
+    </div>
+
+    <div class="passport">
+      <article class="ag-card ag-card--flush">
+        <header class="ag-card__head card-pad">
+          <p class="ag-card__title">Documentos asociados ({{ documents().length }})</p>
+        </header>
+        <table class="ag-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Documento</th>
+              <th>Emisión</th>
+              <th>Vencimiento</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (document of documents(); track document.id) {
+              <tr>
+                <td class="ag-mono">{{ document.code }}</td>
+                <td>{{ document.name }}</td>
+                <td>{{ document.issuedAt }}</td>
+                <td>{{ document.expiresAt ?? '—' }}</td>
+                <td>
+                  <app-status-badge
+                    [label]="document.status"
+                    [tone]="toneForStatus(document.status)"
+                  />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="ag-muted empty">Sin documentos asociados.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </article>
+
+      <article class="ag-card ag-card--flush">
+        <header class="ag-card__head card-pad">
+          <p class="ag-card__title">Evidencias ({{ evidences().length }})</p>
+        </header>
+        <ul class="evidence">
+          @for (evidence of evidences(); track evidence.id) {
+            <li class="evidence__item">
+              <span class="evidence__kind">{{ evidence.kind === 'photo' ? 'JPG' : 'PDF' }}</span>
+              <div>
+                <p class="evidence__name ag-mono">{{ evidence.fileName }}</p>
+                <p class="ag-muted">{{ evidence.description }} · {{ evidence.capturedBy }}</p>
+              </div>
+            </li>
+          } @empty {
+            <li class="ag-muted card-pad">Sin evidencias registradas.</li>
+          }
+        </ul>
+      </article>
+    </div>
+
+    <article class="ag-card ag-card--flush">
+      <header class="ag-card__head card-pad">
+        <p class="ag-card__title">Incidencias ({{ incidents().length }})</p>
+      </header>
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Apertura</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (incident of incidents(); track incident.id) {
+            <tr>
+              <td class="ag-mono">{{ incident.code }}</td>
+              <td>{{ incident.description }}</td>
+              <td>{{ formatDateTime(incident.openedAt) }}</td>
+              <td>
+                <app-status-badge
+                  [label]="incident.status"
+                  [tone]="toneForStatus(incident.severity)"
+                />
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="ag-muted empty">Sin incidencias registradas.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  } @else {
+    <article class="ag-card">
+      <p class="ag-card__title">Operación no encontrada</p>
+      <p class="ag-card__sub">El código consultado no existe en la Torre de Control.</p>
+      <a class="ag-btn" routerLink="/operations">Volver a operaciones</a>
+    </article>
+  }
+</section>

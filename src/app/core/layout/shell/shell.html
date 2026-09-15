@@ -1,0 +1,101 @@
+<div class="shell" [class.shell--collapsed]="collapsed()">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand__mark">AG</span>
+      @if (!collapsed()) {
+        <span class="brand__text">
+          <strong>AdminGo</strong>
+          <small>Control Tower</small>
+        </span>
+      }
+    </div>
+
+    <nav class="nav" aria-label="Módulos del sistema">
+      @for (group of navGroups(); track group.label) {
+        <div class="nav__group">
+          @if (!collapsed()) {
+            <p class="nav__label">{{ group.label }}</p>
+          }
+          @for (item of group.items; track item.path) {
+            <a
+              class="nav__link"
+              [routerLink]="item.path"
+              routerLinkActive="nav__link--active"
+              [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+              [title]="item.label"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path [attr.d]="item.icon" />
+              </svg>
+              @if (!collapsed()) {
+                <span>{{ item.label }}</span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="sidebar__foot">
+      @if (!collapsed()) {
+        <p class="sidebar__foot-title">ADMIN SCORE</p>
+        <p class="sidebar__foot-score">{{ kpis().adminScore }}<span>/100</span></p>
+      }
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button
+        class="topbar__toggle"
+        type="button"
+        (click)="toggleSidebar()"
+        aria-label="Alternar menú lateral"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+        </svg>
+      </button>
+
+      <div class="topbar__title">
+        <strong>Torre de Control Digital</strong>
+        <small>Hidrocarburos · Actualizado {{ lastUpdate }}</small>
+      </div>
+
+      <span class="ag-spacer"></span>
+
+      <div class="topbar__pills">
+        <span class="pill pill--danger">{{ kpis().criticalAlerts }} alertas críticas</span>
+        <span class="pill pill--warn">{{ kpis().documentsExpired }} docs. vencidos</span>
+        <span class="pill pill--ok"
+          >{{ kpis().plantsGreen }}/{{ kpis().plantsTotal }} plantas OK</span
+        >
+      </div>
+
+      <div class="user">
+        <span class="user__avatar">{{ initials() }}</span>
+        <span class="user__meta">
+          <strong>{{ user().fullName }}</strong>
+          <small>{{ user().role }}</small>
+        </span>
+        <button
+          class="user__logout"
+          type="button"
+          (click)="logout()"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path
+              d="M10 3h4a1 1 0 0 1 1 1v2h-2V5h-2v14h2v-1h2v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm8.2 5.8 1.4 1.4L17.8 12l1.8 1.8-1.4 1.4L16.4 13.4 15 12l1.4-1.4 1.8-1.8zM3 11h8v2H3z"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

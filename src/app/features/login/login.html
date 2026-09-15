@@ -1,0 +1,58 @@
+<main class="login">
+  <section class="login__card">
+    <header class="login__brand">
+      <span class="login__mark">AG</span>
+      <div>
+        <h1 class="login__title">AdminGo</h1>
+        <p class="login__subtitle">Torre de Control Digital · Hidrocarburos</p>
+      </div>
+    </header>
+
+    <form class="login__form" (submit)="submit($event)">
+      <label class="login__field">
+        <span>Usuario</span>
+        <input
+          type="text"
+          autocomplete="username"
+          spellcheck="false"
+          [value]="username()"
+          (input)="setUsername($event)"
+          required
+        />
+      </label>
+
+      <label class="login__field">
+        <span>Contraseña</span>
+        <input
+          type="password"
+          autocomplete="current-password"
+          [value]="password()"
+          (input)="setPassword($event)"
+          required
+        />
+      </label>
+
+      @if (error(); as message) {
+        <p class="login__error" role="alert">{{ message }}</p>
+      }
+
+      <button class="login__submit" type="submit">Iniciar sesión</button>
+    </form>
+
+    <footer class="login__demo">
+      <p class="login__demo-title">
+        Accesos del prototipo · contraseña <code>{{ demoPassword }}</code>
+      </p>
+      <ul class="login__demo-list">
+        @for (demo of demoUsers; track demo.username) {
+          <li>
+            <button type="button" class="login__demo-user" (click)="fill(demo.username)">
+              <strong class="ag-mono">{{ demo.username }}</strong>
+              <small>{{ demo.role }}</small>
+            </button>
+          </li>
+        }
+      </ul>
+    </footer>
+  </section>
+</main>

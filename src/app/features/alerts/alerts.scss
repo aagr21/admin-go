@@ -1,0 +1,75 @@
+.counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.85rem;
+}
+
+.count-card__label {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ag-ink-muted);
+  font-weight: 600;
+}
+
+.count-card__value {
+  margin: 0.25rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.count-card__sub {
+  margin: 0.1rem 0 0;
+  font-size: 0.76rem;
+  color: var(--ag-ink-soft);
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ag-ink-soft);
+}
+
+.filter select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--ag-line);
+  font: inherit;
+  font-weight: 400;
+  text-transform: none;
+  background: #fff;
+  min-width: 180px;
+}
+
+.filters__count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--ag-ink-soft);
+  padding-bottom: 0.5rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.link {
+  color: var(--ag-primary-600);
+  font-weight: 600;
+}
+
+.empty {
+  text-align: center;
+  padding: 1.5rem;
+}

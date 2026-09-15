@@ -1,0 +1,192 @@
+<section class="ag-page">
+  <header class="ag-page__head">
+    <div>
+      <h1 class="ag-page__title">Torre de Control</h1>
+      <p class="ag-page__sub">
+        Visión nacional de {{ kpis().plantsTotal }} plantas, volúmenes, documentos y alertas.
+      </p>
+    </div>
+    <div class="ag-row">
+      <a class="ag-btn" routerLink="/operations">Operaciones</a>
+      <a class="ag-btn ag-btn--primary" routerLink="/alerts"
+        >Alertas ({{ kpis().criticalAlerts }})</a
+      >
+    </div>
+  </header>
+
+  <div class="kpi-grid">
+    <app-kpi-card
+      label="Plantas monitoreadas"
+      [value]="kpis().plantsTotal + ''"
+      tone="info"
+      [hint]="
+        kpis().plantsGreen +
+        ' OK · ' +
+        kpis().plantsYellow +
+        ' observadas · ' +
+        kpis().plantsRed +
+        ' críticas'
+      "
+    />
+    <app-kpi-card
+      label="Volumen recibido (hoy)"
+      [value]="formatLiters(kpis().receivedVolume)"
+      hint="Recepciones de la red"
+      tone="ok"
+    />
+    <app-kpi-card
+      label="Volumen despachado (hoy)"
+      [value]="formatLiters(kpis().dispatchedVolume)"
+      hint="Despachos a EESS"
+      tone="info"
+    />
+    <app-kpi-card
+      label="Diferencia volumétrica"
+      [value]="formatLiters(kpis().volumeDifference)"
+      [tone]="volumeDiffTone()"
+      [hint]="formatPercent(kpis().volumeDifferencePercent) + ' sobre saldo teórico'"
+    />
+    <app-kpi-card
+      label="Operaciones abiertas"
+      [value]="kpis().openOperations + ''"
+      [tone]="kpis().observedOperations > 0 ? 'warn' : 'ok'"
+      [hint]="kpis().observedOperations + ' observadas'"
+    />
+    <app-kpi-card
+      label="Documentos por vencer"
+      [value]="kpis().documentsExpiringSoon + ''"
+      [tone]="kpis().documentsExpired > 0 ? 'danger' : 'warn'"
+      [hint]="kpis().documentsExpired + ' vencidos'"
+    />
+    <app-kpi-card
+      label="Declaraciones pendientes"
+      [value]="kpis().pendingDeclarations + ''"
+      hint="Periodos no presentados"
+      tone="warn"
+    />
+    <app-kpi-card
+      label="Incidencias abiertas"
+      [value]="kpis().openIncidents + ''"
+      [tone]="kpis().criticalAlerts > 0 ? 'danger' : 'ok'"
+      [hint]="kpis().criticalAlerts + ' alertas críticas'"
+    />
+  </div>
+
+  <div class="layout">
+    <article class="ag-card ag-card--flush">
+      <header class="ag-card__head card-pad">
+        <div>
+          <p class="ag-card__title">Semáforo de plantas</p>
+          <p class="ag-card__sub">VER 16 PLANTAS → SELECCIONAR UNA → VER TODA SU OPERACIÓN</p>
+        </div>
+        <a class="ag-btn" routerLink="/plants">Ver detalle</a>
+      </header>
+      <div class="plant-grid card-pad">
+        @for (plant of plants(); track plant.id) {
+          <a [class]="'plant plant--' + plant.status" [routerLink]="['/plants', plant.id]">
+            <div class="plant__head">
+              <span class="plant__dot"></span>
+              <span class="plant__code ag-mono">{{ plant.code }}</span>
+            </div>
+            <p class="plant__name">{{ plant.name }}</p>
+            <p class="plant__city">{{ plant.city }} · {{ plant.department }}</p>
+            <dl class="plant__stats">
+              <div>
+                <dt>Disponible</dt>
+                <dd>{{ formatLiters(plant.availableVolume) }}</dd>
+              </div>
+              <div>
+                <dt>AdminScore</dt>
+                <dd>{{ plant.adminScore }}</dd>
+              </div>
+            </dl>
+          </a>
+        }
+      </div>
+    </article>
+
+    <div class="side">
+      <article class="ag-card">
+        <p class="ag-card__title">ADMIN SCORE</p>
+        <p class="ag-card__sub">Cumplimiento y control configurable</p>
+        <p class="score" [class]="'score--' + scoreTone(kpis().adminScore)">
+          {{ kpis().adminScore }}<span>/100</span>
+        </p>
+        <div class="score-bar">
+          <span
+            [class]="'score-bar__fill score-bar__fill--' + scoreTone(kpis().adminScore)"
+            [style.width.%]="kpis().adminScore"
+          ></span>
+        </div>
+        <dl class="score-legend">
+          <div>
+            <dt>Inventario teórico</dt>
+            <dd>{{ formatLiters(kpis().theoreticalInventory) }}</dd>
+          </div>
+          <div>
+            <dt>Inventario físico</dt>
+            <dd>{{ formatLiters(kpis().physicalInventory) }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="ag-card ag-card--flush">
+        <header class="ag-card__head card-pad">
+          <p class="ag-card__title">Alertas críticas</p>
+          <a class="ag-btn" routerLink="/alerts">Ver todas</a>
+        </header>
+        <ul class="alert-list">
+          @for (alert of criticalAlerts(); track alert.id) {
+            <li class="alert-list__item">
+              <app-status-badge [label]="alert.type" [tone]="toneForStatus(alert.severity)" />
+              <p class="alert-list__msg">{{ alert.message }}</p>
+              <span class="alert-list__ref ag-mono">{{ alert.entityRef }}</span>
+            </li>
+          } @empty {
+            <li class="alert-list__empty">Sin alertas críticas activas.</li>
+          }
+        </ul>
+      </article>
+    </div>
+  </div>
+
+  <article class="ag-card ag-card--flush">
+    <header class="ag-card__head card-pad">
+      <p class="ag-card__title">Operaciones recientes</p>
+      <a class="ag-btn" routerLink="/operations">Todas las operaciones</a>
+    </header>
+    <table class="ag-table">
+      <thead>
+        <tr>
+          <th>Identificador</th>
+          <th>Tipo</th>
+          <th>Producto</th>
+          <th class="ag-num">Documentado</th>
+          <th class="ag-num">Recibido</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (operation of operations(); track operation.id) {
+          <tr>
+            <td>
+              <a class="link ag-mono" [routerLink]="['/operations', operation.code]">{{
+                operation.code
+              }}</a>
+            </td>
+            <td>{{ operation.type }}</td>
+            <td>{{ operation.product }}</td>
+            <td class="ag-num">{{ formatLiters(operation.documentedVolume) }}</td>
+            <td class="ag-num">{{ formatLiters(operation.receivedVolume) }}</td>
+            <td>
+              <app-status-badge
+                [label]="operation.status"
+                [tone]="toneForStatus(operation.status)"
+              />
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </article>
+</section>

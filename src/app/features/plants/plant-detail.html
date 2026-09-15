@@ -1,0 +1,150 @@
+<section class="ag-page">
+  @if (plant(); as p) {
+    <header class="ag-page__head">
+      <div>
+        <p class="crumb"><a routerLink="/plants">Plantas</a> / {{ p.code }}</p>
+        <h1 class="ag-page__title">{{ p.name }}</h1>
+        <p class="ag-page__sub">{{ p.city }} · {{ p.department }}</p>
+      </div>
+      <div class="ag-row">
+        <app-status-badge
+          [label]="labelForPlantStatus(p.status)"
+          [tone]="toneForStatus(p.status)"
+        />
+        <span class="ag-muted">AdminScore {{ p.adminScore }}</span>
+      </div>
+    </header>
+
+    <article class="ag-card">
+      <p class="ag-card__title">Ficha operativa</p>
+      <dl class="meta">
+        <div>
+          <dt>Productos</dt>
+          <dd>{{ p.products.join(', ') }}</dd>
+        </div>
+        <div>
+          <dt>Volumen disponible</dt>
+          <dd>{{ formatLiters(p.availableVolume) }}</dd>
+        </div>
+        <div>
+          <dt>Saldo teórico</dt>
+          <dd>{{ formatLiters(p.theoreticalBalance) }}</dd>
+        </div>
+        <div>
+          <dt>Saldo físico</dt>
+          <dd>{{ formatLiters(p.physicalBalance) }}</dd>
+        </div>
+        <div>
+          <dt>Diferencia</dt>
+          <dd>{{ formatLiters(p.physicalBalance - p.theoreticalBalance) }}</dd>
+        </div>
+        <div>
+          <dt>Recibido hoy</dt>
+          <dd>{{ formatLiters(p.receivedToday) }}</dd>
+        </div>
+        <div>
+          <dt>Despachado hoy</dt>
+          <dd>{{ formatLiters(p.dispatchedToday) }}</dd>
+        </div>
+        <div>
+          <dt>Operaciones abiertas</dt>
+          <dd>{{ p.openOperations }}</dd>
+        </div>
+        <div>
+          <dt>Cisternas dentro</dt>
+          <dd>{{ p.cisternsInside }}</dd>
+        </div>
+        <div>
+          <dt>Último control</dt>
+          <dd>{{ formatDateTime(p.lastControlAt) }}</dd>
+        </div>
+      </dl>
+    </article>
+
+    <div class="cols">
+      <article class="ag-card ag-card--flush">
+        <header class="ag-card__head card-pad">
+          <p class="ag-card__title">Operaciones ({{ operations().length }})</p>
+        </header>
+        <table class="ag-table">
+          <thead>
+            <tr>
+              <th>Identificador</th>
+              <th>Tipo</th>
+              <th class="ag-num">Documentado</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (operation of operations(); track operation.id) {
+              <tr>
+                <td>
+                  <a class="link ag-mono" [routerLink]="['/operations', operation.code]">{{
+                    operation.code
+                  }}</a>
+                </td>
+                <td>{{ operation.type }}</td>
+                <td class="ag-num">{{ formatLiters(operation.documentedVolume) }}</td>
+                <td>
+                  <app-status-badge
+                    [label]="operation.status"
+                    [tone]="toneForStatus(operation.status)"
+                  />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="ag-muted empty">Sin operaciones registradas.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </article>
+
+      <div class="side">
+        <article class="ag-card ag-card--flush">
+          <header class="ag-card__head card-pad">
+            <p class="ag-card__title">Alertas ({{ alerts().length }})</p>
+          </header>
+          <ul class="list">
+            @for (alert of alerts(); track alert.id) {
+              <li class="list__item">
+                <app-status-badge [label]="alert.type" [tone]="toneForStatus(alert.severity)" />
+                <p>{{ alert.message }}</p>
+              </li>
+            } @empty {
+              <li class="ag-muted card-pad">Sin alertas para esta planta.</li>
+            }
+          </ul>
+        </article>
+
+        <article class="ag-card ag-card--flush">
+          <header class="ag-card__head card-pad">
+            <p class="ag-card__title">Controles operativos ({{ controls().length }})</p>
+          </header>
+          <ul class="list">
+            @for (control of controls(); track control.id) {
+              <li class="list__item">
+                <div class="ag-row">
+                  <app-status-badge
+                    [label]="control.status"
+                    [tone]="toneForStatus(control.status)"
+                  />
+                  <span class="ag-muted">{{ control.controlDate }} · {{ control.shift }}</span>
+                </div>
+                <p>{{ control.observation }}</p>
+              </li>
+            } @empty {
+              <li class="ag-muted card-pad">Sin controles registrados.</li>
+            }
+          </ul>
+        </article>
+      </div>
+    </div>
+  } @else {
+    <article class="ag-card">
+      <p class="ag-card__title">Planta no encontrada</p>
+      <a class="ag-btn" routerLink="/plants">Volver a plantas</a>
+    </article>
+  }
+</section>

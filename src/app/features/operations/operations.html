@@ -1,0 +1,100 @@
+<section class="ag-page">
+  <header class="ag-page__head">
+    <div>
+      <h1 class="ag-page__title">Operaciones</h1>
+      <p class="ag-page__sub">
+        Cada operación tiene un identificador único (p. ej. AG-DI-2026-000001) y su Pasaporte
+        Digital.
+      </p>
+    </div>
+  </header>
+
+  <div class="filters ag-card">
+    <label class="filter filter--search">
+      <span>Buscar</span>
+      <input
+        type="search"
+        placeholder="Código, producto, origen, destino o cisterna…"
+        [value]="search()"
+        (input)="onSearch($event)"
+      />
+    </label>
+    <label class="filter">
+      <span>Estado</span>
+      <select [value]="statusFilter()" (change)="onStatusChange($event)">
+        <option value="all">Todos</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </label>
+    <label class="filter">
+      <span>Tipo</span>
+      <select [value]="typeFilter()" (change)="onTypeChange($event)">
+        <option value="all">Todos</option>
+        @for (type of types; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </label>
+    <span class="filters__count">{{ filtered().length }} operaciones</span>
+  </div>
+
+  <article class="ag-card ag-card--flush">
+    <div class="table-wrap">
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Identificador</th>
+            <th>Tipo</th>
+            <th>Producto</th>
+            <th>Origen → Destino</th>
+            <th>Cisterna</th>
+            <th class="ag-num">Documentado</th>
+            <th class="ag-num">Recibido</th>
+            <th class="ag-num">Desvío</th>
+            <th>Actualizado</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (operation of filtered(); track operation.id) {
+            <tr>
+              <td>
+                <a class="link ag-mono" [routerLink]="['/operations', operation.code]">{{
+                  operation.code
+                }}</a>
+              </td>
+              <td>{{ operation.type }}</td>
+              <td>{{ operation.product }}</td>
+              <td class="cell-route">{{ operation.origin }} → {{ operation.destination }}</td>
+              <td class="ag-mono">{{ operation.cisternPlate }}</td>
+              <td class="ag-num">{{ formatLiters(operation.documentedVolume) }}</td>
+              <td class="ag-num">{{ formatLiters(operation.receivedVolume) }}</td>
+              <td class="ag-num">
+                @if (operation.receivedVolume > 0) {
+                  {{ formatPercent(deviation(operation)) }}
+                } @else {
+                  <span class="ag-muted">—</span>
+                }
+              </td>
+              <td>{{ formatDateTime(operation.updatedAt) }}</td>
+              <td>
+                <app-status-badge
+                  [label]="operation.status"
+                  [tone]="toneForStatus(operation.status)"
+                />
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="ag-muted empty">
+                No hay operaciones que coincidan con los filtros.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>

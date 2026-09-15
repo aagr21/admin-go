@@ -1,0 +1,99 @@
+<section class="ag-page">
+  <header class="ag-page__head">
+    <div>
+      <h1 class="ag-page__title">Alertas e incidencias</h1>
+      <p class="ag-page__sub">
+        Documental · Operativa · Volumétrica · Declarativa · Seguridad · Incidencia
+      </p>
+    </div>
+  </header>
+
+  <div class="counts">
+    @for (entry of countsByType(); track entry.type) {
+      <div class="count-card ag-card">
+        <p class="count-card__label">{{ entry.type }}</p>
+        <p class="count-card__value">{{ entry.total }}</p>
+        <p class="count-card__sub">{{ entry.open }} abiertas</p>
+      </div>
+    }
+  </div>
+
+  <div class="filters ag-card">
+    <label class="filter">
+      <span>Severidad</span>
+      <select [value]="severityFilter()" (change)="onSeverity($event)">
+        <option value="all">Todas</option>
+        @for (severity of severities; track severity) {
+          <option [value]="severity">{{ labelForSeverity(severity) }}</option>
+        }
+      </select>
+    </label>
+    <label class="filter">
+      <span>Estado</span>
+      <select [value]="statusFilter()" (change)="onStatus($event)">
+        <option value="all">Todos</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </label>
+    <label class="filter">
+      <span>Tipo</span>
+      <select [value]="typeFilter()" (change)="onType($event)">
+        <option value="all">Todos</option>
+        @for (type of types; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </label>
+    <span class="filters__count">{{ filtered().length }} alertas</span>
+  </div>
+
+  <article class="ag-card ag-card--flush">
+    <div class="table-wrap">
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Severidad</th>
+            <th>Mensaje</th>
+            <th>Referencia</th>
+            <th>Planta</th>
+            <th>Creada</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (alert of filtered(); track alert.id) {
+            <tr>
+              <td>{{ alert.type }}</td>
+              <td>
+                <app-status-badge
+                  [label]="labelForSeverity(alert.severity)"
+                  [tone]="toneForStatus(alert.severity)"
+                />
+              </td>
+              <td>{{ alert.message }}</td>
+              <td>
+                @if (operationCode(alert.entityRef); as code) {
+                  <a class="link ag-mono" [routerLink]="['/operations', code]">{{ code }}</a>
+                } @else {
+                  <span class="ag-mono">{{ alert.entityRef }}</span>
+                }
+              </td>
+              <td>{{ plantName(alert.plantId) }}</td>
+              <td>{{ formatDateTime(alert.createdAt) }}</td>
+              <td>
+                <app-status-badge [label]="alert.status" [tone]="toneForStatus(alert.status)" />
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="ag-muted empty">Sin alertas que coincidan.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>

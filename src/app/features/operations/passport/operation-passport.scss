@@ -1,0 +1,158 @@
+.crumb {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  color: var(--ag-ink-muted);
+}
+
+.crumb a {
+  color: var(--ag-primary-600);
+  font-weight: 600;
+}
+
+.qr {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px dashed var(--ag-ink-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ag-ink-soft);
+  letter-spacing: 0.05em;
+}
+
+.passport {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card-pad {
+  padding: 1rem 1.25rem;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin: 0.75rem 0 0;
+}
+
+.meta dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ag-ink-muted);
+}
+
+.meta dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+/* ── Línea de tiempo ───────────────────────────────────────────── */
+.timeline {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0 0 0 0.25rem;
+  position: relative;
+}
+
+.timeline__item {
+  position: relative;
+  padding: 0 0 1rem 1.4rem;
+}
+
+.timeline__item::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: 0;
+  width: 2px;
+  background: var(--ag-line);
+}
+
+.timeline__item:last-child::before {
+  display: none;
+}
+
+.timeline__dot {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ag-accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--ag-accent);
+}
+
+.timeline__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline__body strong {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ag-ink-muted);
+}
+
+.timeline__value {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.timeline__detail {
+  font-size: 0.76rem;
+  color: var(--ag-ink-soft);
+}
+
+/* ── Evidencias ────────────────────────────────────────────────── */
+.evidence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.evidence__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.25rem;
+  border-top: 1px solid var(--ag-line);
+}
+
+.evidence__kind {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 34px;
+  border-radius: 6px;
+  background: var(--ag-primary-050);
+  color: var(--ag-primary-600);
+  font-size: 0.68rem;
+  font-weight: 700;
+  flex: none;
+}
+
+.evidence__name {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.evidence__item p:last-child {
+  margin: 0.15rem 0 0;
+  font-size: 0.74rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 1.5rem;
+}

@@ -1,0 +1,122 @@
+.legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--ag-ink-soft);
+}
+
+.legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend__dot--green {
+  background: var(--ag-ok);
+}
+
+.legend__dot--yellow {
+  background: var(--ag-warn);
+}
+
+.legend__dot--red {
+  background: var(--ag-danger);
+}
+
+.plant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.plant {
+  display: block;
+  border-left: 4px solid var(--ag-line);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.plant:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+}
+
+.plant--green {
+  border-left-color: var(--ag-ok);
+}
+
+.plant--yellow {
+  border-left-color: var(--ag-warn);
+}
+
+.plant--red {
+  border-left-color: var(--ag-danger);
+}
+
+.plant__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.plant__code {
+  font-size: 0.75rem;
+  color: var(--ag-ink-soft);
+}
+
+.plant__name {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.plant__city {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ag-ink-muted);
+}
+
+.plant__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin: 0.9rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--ag-line);
+}
+
+.plant__stats dt {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ag-ink-muted);
+}
+
+.plant__stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.plant__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--ag-line);
+  font-size: 0.74rem;
+  color: var(--ag-ink-soft);
+}
