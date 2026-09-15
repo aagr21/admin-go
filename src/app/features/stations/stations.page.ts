@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import { formatLiters, labelForPlantStatus, toneForStatus } from '@shared/util/format';
+import { formatLiters } from '@shared/util/format';
+import { labelForPlantStatus, toneForPlantStatus } from '@shared/util/status';
 
 /** Módulo Estaciones de servicio (EESS) (§20). */
 @Component({
@@ -18,7 +19,7 @@ import { formatLiters, labelForPlantStatus, toneForStatus } from '@shared/util/f
         </div>
       </header>
       <article class="ag-card ag-card--flush">
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Código</th>
@@ -33,20 +34,26 @@ import { formatLiters, labelForPlantStatus, toneForStatus } from '@shared/util/f
           <tbody>
             @for (station of stations(); track station.id) {
               <tr>
-                <td class="ag-mono">{{ station.code }}</td>
-                <td>
+                <td data-label="Código" class="ag-mono">{{ station.code }}</td>
+                <td data-label="Estación">
                   {{ station.name }}
                   <br />
                   <span class="ag-muted">{{ station.city }}</span>
                 </td>
-                <td>{{ station.manager }}</td>
-                <td class="ag-num">{{ formatLiters(station.inventory) }}</td>
-                <td class="ag-num">{{ formatLiters(station.receivedToday) }}</td>
-                <td class="ag-num">{{ formatLiters(station.dispatchedToday) }}</td>
-                <td>
+                <td data-label="Responsable">{{ station.manager }}</td>
+                <td data-label="Inventario" class="ag-num">
+                  {{ formatLiters(station.inventory) }}
+                </td>
+                <td data-label="Recibido hoy" class="ag-num">
+                  {{ formatLiters(station.receivedToday) }}
+                </td>
+                <td data-label="Despachado hoy" class="ag-num">
+                  {{ formatLiters(station.dispatchedToday) }}
+                </td>
+                <td data-label="Estado">
                   <app-status-badge
                     [label]="labelForPlantStatus(station.status)"
-                    [tone]="toneForStatus(station.status)"
+                    [tone]="toneForPlantStatus(station.status)"
                   />
                 </td>
               </tr>
@@ -71,5 +78,5 @@ export class StationsPage {
   protected readonly stations = inject(AdminGoStore).stations;
   protected readonly formatLiters = formatLiters;
   protected readonly labelForPlantStatus = labelForPlantStatus;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly toneForPlantStatus = toneForPlantStatus;
 }

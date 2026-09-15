@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { AuthStore } from '@core/auth/auth.store';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { ReportData, ReportExportService } from '@shared/services/report-export.service';
 import { REPORT_DEFS, ReportOptions } from './report-builders';
@@ -94,7 +93,6 @@ import { REPORT_DEFS, ReportOptions } from './report-builders';
 export class ReportsPage {
   private readonly store = inject(AdminGoStore);
   private readonly exporter = inject(ReportExportService);
-  private readonly auth = inject(AuthStore);
 
   protected readonly defs = REPORT_DEFS;
   /** id del reporte en generación; null cuando la UI está libre. */
@@ -120,11 +118,7 @@ export class ReportsPage {
       } else {
         await this.exporter.exportXlsx(report);
       }
-      this.store.logReportGenerated(
-        this.auth.currentUser()?.username ?? 'sistema',
-        report.slug,
-        format,
-      );
+      await this.store.logReportGenerated(report.slug, format);
     } finally {
       this.busy.set(null);
     }

@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { Volume } from '@core/models/entities';
 import { AdminGoStore } from '@core/services/admin-go.store';
-import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util/format';
+import { formatDateTime, formatLiters, Tone } from '@shared/util/format';
+import { toneForVolumeDifference } from '@shared/util/status';
 
 /** Módulo Volúmenes — movimientos de inventario por tanque y trazabilidad (§14). */
 @Component({
@@ -53,7 +54,7 @@ import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util
             </p>
           </div>
         </header>
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -67,16 +68,18 @@ import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util
           <tbody>
             @for (movement of movements(); track movement.id) {
               <tr>
-                <td>{{ formatDateTime(movement.recordedAt) }}</td>
-                <td class="ag-mono">{{ tankCode(movement.tankId) }}</td>
-                <td>
+                <td data-label="Fecha">{{ formatDateTime(movement.recordedAt) }}</td>
+                <td data-label="Tanque" class="ag-mono">{{ tankCode(movement.tankId) }}</td>
+                <td data-label="Dirección">
                   <span [class]="'vol-dir vol-dir--' + directionTone(movement.direction)">
                     {{ directionLabel(movement.direction) }}
                   </span>
                 </td>
-                <td class="ag-num">{{ formatLiters(movement.quantity) }}</td>
-                <td class="ag-num">{{ formatLiters(movement.balanceAfter) }}</td>
-                <td>
+                <td data-label="Cantidad" class="ag-num">{{ formatLiters(movement.quantity) }}</td>
+                <td data-label="Saldo resultante" class="ag-num">
+                  {{ formatLiters(movement.balanceAfter) }}
+                </td>
+                <td data-label="Operación">
                   @if (operationRef(movement.operationId); as operation) {
                     <a class="vol-link ag-mono" [routerLink]="['/operations', operation.code]">
                       {{ operation.code }}
@@ -101,7 +104,7 @@ import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util
             <p class="ag-card__sub">Trazabilidad de ingresos y salidas en plantas y estaciones.</p>
           </div>
         </header>
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -115,8 +118,8 @@ import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util
           <tbody>
             @for (volume of volumes(); track volume.id) {
               <tr>
-                <td>{{ formatDateTime(volume.recordedAt) }}</td>
-                <td>
+                <td data-label="Fecha">{{ formatDateTime(volume.recordedAt) }}</td>
+                <td data-label="Operación">
                   @if (operationRef(volume.operationId); as operation) {
                     <a class="vol-link ag-mono" [routerLink]="['/operations', operation.code]">
                       {{ operation.code }}
@@ -125,14 +128,14 @@ import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util
                     <span class="ag-muted">—</span>
                   }
                 </td>
-                <td>{{ locationLabel(volume) }}</td>
-                <td>
+                <td data-label="Ubicación">{{ locationLabel(volume) }}</td>
+                <td data-label="Dirección">
                   <span [class]="'vol-dir vol-dir--' + directionTone(volume.direction)">
                     {{ directionLabel(volume.direction) }}
                   </span>
                 </td>
-                <td class="ag-num">{{ formatLiters(volume.quantity) }}</td>
-                <td>{{ volume.authorizedBy ?? '—' }}</td>
+                <td data-label="Cantidad" class="ag-num">{{ formatLiters(volume.quantity) }}</td>
+                <td data-label="Autorizado por">{{ volume.authorizedBy ?? '—' }}</td>
               </tr>
             } @empty {
               <tr>
@@ -189,23 +192,23 @@ import { differenceTone, formatDateTime, formatLiters, Tone } from '@shared/util
       border-radius: 999px;
       font-size: 0.72rem;
       font-weight: 600;
-      background: #f1f5f9;
-      color: #475569;
+      background: var(--ag-neutral-bg);
+      color: var(--ag-neutral-ink);
     }
 
     .vol-dir--ok {
-      background: #dcfce7;
-      color: #166534;
+      background: var(--ag-ok-bg);
+      color: var(--ag-ok-ink);
     }
 
     .vol-dir--info {
-      background: #dbeafe;
-      color: #1e40af;
+      background: var(--ag-info-bg);
+      color: var(--ag-info-ink);
     }
 
     .vol-dir--warn {
-      background: #fef3c7;
-      color: #92400e;
+      background: var(--ag-warn-bg);
+      color: var(--ag-warn-ink);
     }
 
     .vol-link {
@@ -231,7 +234,13 @@ export class VolumesPage {
   protected readonly movements = this.store.inventoryMovements;
   protected readonly formatLiters = formatLiters;
   protected readonly formatDateTime = formatDateTime;
-  protected readonly diffTone = computed(() => differenceTone(this.kpis().volumeDifference));
+  protected readonly diffTone = computed(() =>
+    toneForVolumeDifference(
+      this.kpis().volumeDifference,
+      this.kpis().theoreticalInventory,
+      this.store.maxVolumeDifferencePercent(),
+    ),
+  );
 
   protected operationRef(operationId: string | null) {
     return this.store.operationById(operationId);

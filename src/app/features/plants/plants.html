@@ -31,7 +31,7 @@
           <span class="plant__code ag-mono">{{ plant.code }}</span>
           <app-status-badge
             [label]="labelForPlantStatus(plant.status)"
-            [tone]="toneForStatus(plant.status)"
+            [tone]="toneForPlantStatus(plant.status)"
           />
         </div>
         <p class="plant__name">{{ plant.name }}</p>

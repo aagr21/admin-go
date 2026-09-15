@@ -1,5 +1,5 @@
 import { Alert, Evidence, Incident, QualityControl } from '@core/models/entities';
-import { OPERATIONS, PLANTS } from './mock-data';
+import { CISTERNS, DOCUMENTS, OPERATIONS, PLANTS } from './mock-data';
 
 /**
  * Evidencias, alertas, incidencias y controles de calidad (§10, §22, §25).
@@ -9,9 +9,16 @@ import { OPERATIONS, PLANTS } from './mock-data';
 const pad = (n: number, size = 2): string => String(n).padStart(size, '0');
 
 /* ── Evidencias fotográficas y documentales (§10) ───────────────── */
+/** Controles existentes en `mock-compliance`; se referencian por id. */
+const CONTROL_COUNT = 6;
+
 export const EVIDENCES: Evidence[] = Array.from({ length: 30 }, (_, i) => {
   const operation = OPERATIONS[i % OPERATIONS.length];
   const isPhoto = i % 3 !== 0;
+  // Una de cada cuatro evidencias respalda un expediente documental (§15).
+  const documentIndex = i + 1;
+  const documentId =
+    i % 4 === 0 && documentIndex <= DOCUMENTS.length ? `doc-${documentIndex}` : null;
   return {
     id: `evd-${i + 1}`,
     kind: isPhoto ? 'photo' : 'pdf',
@@ -24,6 +31,9 @@ export const EVIDENCES: Evidence[] = Array.from({ length: 30 }, (_, i) => {
     operationId: operation.id,
     plantId: operation.plantId,
     tankId: operation.tankId,
+    documentId,
+    // La mitad del material de campo pertenece a un control operativo (§10).
+    controlId: i % 2 === 0 ? `ctl-${(i % CONTROL_COUNT) + 1}` : null,
   };
 });
 
@@ -158,6 +168,10 @@ export const ALERTS: Alert[] = ALERT_SEEDS.map(
     message,
     entityRef,
     plantId: plantIdx >= 0 ? PLANTS[plantIdx].id : null,
+    stationId: null,
+    // Las alertas del dataset son registros curados a mano; las derivadas por
+    // reglas las genera `deriveAlerts` con identificadores estables (§25).
+    source: 'manual' as const,
     createdAt,
   }),
 );
@@ -221,6 +235,8 @@ export const INCIDENTS: Incident[] = INCIDENT_SEEDS.map(
     code: `INC-2026-${String(i + 1).padStart(4, '0')}`,
     plantId: plantIdx >= 0 ? PLANTS[plantIdx].id : null,
     operationId: operationIdx >= 0 ? OPERATIONS[operationIdx].id : null,
+    cisternId: i % 3 === 0 ? CISTERNS[i % CISTERNS.length].id : null,
+    controlId: i % 2 === 0 ? `ctl-${(i % CONTROL_COUNT) + 1}` : null,
     description,
     severity,
     openedAt,

@@ -24,7 +24,7 @@
       <select [value]="severityFilter()" (change)="onSeverity($event)">
         <option value="all">Todas</option>
         @for (severity of severities; track severity) {
-          <option [value]="severity">{{ labelForSeverity(severity) }}</option>
+          <option [value]="severity">{{ labelForAlertSeverity(severity) }}</option>
         }
       </select>
     </label>
@@ -51,7 +51,7 @@
 
   <article class="ag-card ag-card--flush">
     <div class="table-wrap">
-      <table class="ag-table">
+      <table class="ag-table ag-table--stack">
         <thead>
           <tr>
             <th>Tipo</th>
@@ -66,25 +66,28 @@
         <tbody>
           @for (alert of filtered(); track alert.id) {
             <tr>
-              <td>{{ alert.type }}</td>
-              <td>
+              <td data-label="Tipo">{{ alert.type }}</td>
+              <td data-label="Severidad">
                 <app-status-badge
-                  [label]="labelForSeverity(alert.severity)"
-                  [tone]="toneForStatus(alert.severity)"
+                  [label]="labelForAlertSeverity(alert.severity)"
+                  [tone]="toneForAlertSeverity(alert.severity)"
                 />
               </td>
-              <td>{{ alert.message }}</td>
-              <td>
+              <td data-label="Mensaje">{{ alert.message }}</td>
+              <td data-label="Referencia">
                 @if (operationCode(alert.entityRef); as code) {
                   <a class="link ag-mono" [routerLink]="['/operations', code]">{{ code }}</a>
                 } @else {
                   <span class="ag-mono">{{ alert.entityRef }}</span>
                 }
               </td>
-              <td>{{ plantName(alert.plantId) }}</td>
-              <td>{{ formatDateTime(alert.createdAt) }}</td>
-              <td>
-                <app-status-badge [label]="alert.status" [tone]="toneForStatus(alert.status)" />
+              <td data-label="Planta">{{ plantName(alert.plantId) }}</td>
+              <td data-label="Creada">{{ formatDateTime(alert.createdAt) }}</td>
+              <td data-label="Estado">
+                <app-status-badge
+                  [label]="alert.status"
+                  [tone]="toneForAlertStatus(alert.status)"
+                />
               </td>
             </tr>
           } @empty {

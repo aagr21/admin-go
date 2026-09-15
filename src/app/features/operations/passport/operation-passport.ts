@@ -2,7 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { RouterLink } from '@angular/router';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import { formatDateTime, formatLiters, toneForStatus } from '@shared/util/format';
+import { formatDateTime, formatLiters } from '@shared/util/format';
+import {
+  toneForAlertSeverity,
+  toneForDocumentStatus,
+  toneForOperationStatus,
+} from '@shared/util/status';
 
 interface PassportStage {
   label: string;
@@ -95,5 +100,7 @@ export class OperationPassport {
 
   protected readonly formatLiters = formatLiters;
   protected readonly formatDateTime = formatDateTime;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly toneForOperationStatus = toneForOperationStatus;
+  protected readonly toneForDocumentStatus = toneForDocumentStatus;
+  protected readonly toneForAlertSeverity = toneForAlertSeverity;
 }

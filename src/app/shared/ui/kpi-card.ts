@@ -24,13 +24,11 @@ import { Tone } from '../util/format';
   styles: `
     .kpi {
       position: relative;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      background: var(--ag-surface);
+      border: 1px solid var(--ag-line);
+      border-radius: var(--ag-radius);
       padding: 1rem 1.1rem;
-      box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.06),
-        0 8px 24px rgba(15, 23, 42, 0.05);
+      box-shadow: var(--ag-shadow);
       overflow: hidden;
     }
 
@@ -39,23 +37,23 @@ import { Tone } from '../util/format';
       position: absolute;
       inset: 0 auto 0 0;
       width: 4px;
-      background: #94a3b8;
+      background: var(--ag-ink-muted);
     }
 
     .kpi--ok::before {
-      background: #16a34a;
+      background: var(--ag-ok);
     }
 
     .kpi--warn::before {
-      background: #f59e0b;
+      background: var(--ag-warn);
     }
 
     .kpi--danger::before {
-      background: #dc2626;
+      background: var(--ag-danger);
     }
 
     .kpi--info::before {
-      background: #2563eb;
+      background: var(--ag-info);
     }
 
     .kpi__top {
@@ -98,7 +96,7 @@ import { Tone } from '../util/format';
       margin: 0.5rem 0 0;
       font-size: 1.5rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--ag-ink);
       font-variant-numeric: tabular-nums;
     }
 

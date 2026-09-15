@@ -1,161 +1,98 @@
-/** Utilidades de formato y clasificación visual de estados. */
+/**
+ * Utilidades de formato para presentación.
+ *
+ * Solo transforman valores: no conocen los vocabularios del dominio (eso vive
+ * en `status.ts`) ni la fecha de corte del dataset (eso vive en
+ * `core/data/dataset-date`). Las funciones relativas al tiempo reciben la fecha
+ * de referencia como parámetro para no depender de un reloj global oculto.
+ */
 
 export type Tone = 'ok' | 'warn' | 'danger' | 'info' | 'neutral';
 
-const numberFormat = new Intl.NumberFormat('es-BO', { maximumFractionDigits: 0 });
-const percentFormat = new Intl.NumberFormat('es-BO', {
+const NUMBER_FORMAT = new Intl.NumberFormat('es-BO', { maximumFractionDigits: 0 });
+const PERCENT_FORMAT = new Intl.NumberFormat('es-BO', {
   minimumFractionDigits: 1,
   maximumFractionDigits: 2,
 });
 
-export function formatNumber(value: number): string {
-  return numberFormat.format(Math.round(value));
-}
+const SHORT_DATE_FORMAT = new Intl.DateTimeFormat('es-BO', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+});
 
-export function formatVolume(value: number): string {
-  return `${numberFormat.format(Math.round(value))} L`;
-}
+const NUMERIC_DATE_FORMAT = new Intl.DateTimeFormat('es-BO', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+});
 
+const DATE_TIME_FORMAT = new Intl.DateTimeFormat('es-BO', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+const MILLISECONDS_PER_DAY = 86_400_000;
+
+/** Fecha civil sin hora, p. ej. "2026-01-10". */
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Formatea litros con separador de miles boliviano. */
 export function formatLiters(value: number): string {
-  return `${numberFormat.format(Math.round(value))} L`;
+  return `${NUMBER_FORMAT.format(Math.round(value))} L`;
 }
 
 export function formatPercent(value: number): string {
-  return `${percentFormat.format(value)} %`;
+  return `${PERCENT_FORMAT.format(value)} %`;
 }
 
+/** Fecha corta legible, p. ej. "14 sept 2026". */
 export function formatDate(iso: string | null): string {
-  if (!iso) {
-    return '—';
-  }
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return iso;
-  }
-  return new Intl.DateTimeFormat('es-BO', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(date);
+  const date = parseDate(iso);
+  return date ? SHORT_DATE_FORMAT.format(date) : placeholderFor(iso);
 }
 
+/** Fecha numérica para cortes de reporte, p. ej. "14/09/2026". */
+export function formatDateNumeric(iso: string | null): string {
+  const date = parseDate(iso);
+  return date ? NUMERIC_DATE_FORMAT.format(date) : placeholderFor(iso);
+}
+
+/** Fecha y hora, p. ej. "14/09/2026, 09:30". */
 export function formatDateTime(iso: string | null): string {
-  if (!iso) {
-    return '—';
-  }
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return iso;
-  }
-  return new Intl.DateTimeFormat('es-BO', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
+  const date = parseDate(iso);
+  return date ? DATE_TIME_FORMAT.format(date) : placeholderFor(iso);
 }
 
-/** Días restantes hasta el vencimiento (negativo si ya venció). */
-export function daysUntil(iso: string | null): number | null {
+/**
+ * Días desde `reference` hasta `iso` (negativo si ya venció).
+ * Devuelve `null` cuando la fecha es nula o inválida.
+ */
+export function daysUntil(iso: string | null, reference: Date): number | null {
+  const target = parseDate(iso);
+  if (!target) {
+    return null;
+  }
+  return Math.round((target.getTime() - reference.getTime()) / MILLISECONDS_PER_DAY);
+}
+
+/** `Date` válido a partir de un ISO, o `null` si viene vacío o corrupto. */
+function parseDate(iso: string | null): Date | null {
   if (!iso) {
     return null;
   }
-  const target = new Date(iso).getTime();
-  if (Number.isNaN(target)) {
-    return null;
-  }
-  const reference = new Date('2026-09-14T00:00:00').getTime();
-  return Math.round((target - reference) / 86_400_000);
+  // `new Date('2026-01-10')` se interpreta como medianoche UTC y en husos al
+  // oeste de Greenwich se muestra un día antes. Las fechas sin hora del dataset
+  // son fechas civiles: se anclan a medianoche local.
+  const normalized = DATE_ONLY_PATTERN.test(iso) ? `${iso}T00:00:00` : iso;
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function toneForStatus(value: string): Tone {
-  switch (value) {
-    case 'green':
-    case 'Vigente':
-    case 'Cerrada':
-    case 'Recibida':
-    case 'Presentada':
-    case 'Validada':
-    case 'Conforme':
-    case 'Disponible':
-    case 'ok':
-      return 'ok';
-    case 'yellow':
-    case 'Próximo a vencer':
-    case 'Observada':
-    case 'Observado':
-    case 'Escalado':
-    case 'En revisión':
-    case 'Borrador':
-    case 'En ejecución':
-    case 'Próximo a vencer ':
-    case 'warning':
-    case 'observed':
-      return 'warn';
-    case 'red':
-    case 'Vencido':
-    case 'Crítico':
-    case 'Abierta':
-    case 'Escalada':
-    case 'critical':
-      return 'danger';
-    case 'Programada':
-    case 'En tránsito':
-    case 'Registrada':
-    case 'info':
-      return 'info';
-    default:
-      return 'neutral';
-  }
-}
-
-export function labelForSeverity(severity: string): string {
-  switch (severity) {
-    case 'critical':
-      return 'Crítica';
-    case 'warning':
-      return 'Advertencia';
-    case 'info':
-      return 'Informativa';
-    default:
-      return severity;
-  }
-}
-
-export function labelForCompliance(level: string): string {
-  switch (level) {
-    case 'ok':
-      return 'OK';
-    case 'observed':
-      return 'Observado';
-    case 'critical':
-      return 'Crítico';
-    default:
-      return level;
-  }
-}
-
-export function labelForPlantStatus(status: string): string {
-  switch (status) {
-    case 'green':
-      return 'Operación normal';
-    case 'yellow':
-      return 'Con observaciones';
-    case 'red':
-      return 'Crítico';
-    default:
-      return status;
-  }
-}
-
-export function differenceTone(difference: number): Tone {
-  const absolute = Math.abs(difference);
-  if (absolute > 500) {
-    return 'danger';
-  }
-  if (absolute > 200) {
-    return 'warn';
-  }
-  return 'ok';
+/** Guion de "sin dato"; si el ISO era ilegible se muestra tal cual. */
+function placeholderFor(iso: string | null): string {
+  return iso ?? '—';
 }

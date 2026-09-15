@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import { formatLiters, toneForStatus } from '@shared/util/format';
+import { formatLiters } from '@shared/util/format';
+import { toneForCisternStatus, toneForDocumentStatus } from '@shared/util/status';
 
 /** Módulo Cisternas — unidades, conductores, precintos y trazabilidad (§19). */
 @Component({
@@ -19,7 +20,7 @@ import { formatLiters, toneForStatus } from '@shared/util/format';
         </div>
       </header>
       <article class="ag-card ag-card--flush">
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Placa</th>
@@ -34,31 +35,25 @@ import { formatLiters, toneForStatus } from '@shared/util/format';
           <tbody>
             @for (cistern of cisterns(); track cistern.id) {
               <tr>
-                <td class="ag-mono">{{ cistern.plate }}</td>
-                <td>{{ driverName(cistern.driverId) }}</td>
-                <td class="ag-num">{{ formatLiters(cistern.capacity) }}</td>
-                <td>
+                <td data-label="Placa" class="ag-mono">{{ cistern.plate }}</td>
+                <td data-label="Conductor">{{ driverName(cistern.driverId) }}</td>
+                <td data-label="Capacidad" class="ag-num">{{ formatLiters(cistern.capacity) }}</td>
+                <td data-label="Precintos">
                   @for (seal of cistern.sealCodes; track seal) {
                     <span class="seal ag-mono">{{ seal }}</span>
                   }
                 </td>
-                <td class="ag-num">{{ cistern.operationsCount }}</td>
-                <td>
+                <td data-label="Operaciones" class="ag-num">{{ cistern.operationsCount }}</td>
+                <td data-label="Documentación">
                   <app-status-badge
                     [label]="cistern.documentStatus"
-                    [tone]="toneForStatus(cistern.documentStatus)"
+                    [tone]="toneForDocumentStatus(cistern.documentStatus)"
                   />
                 </td>
-                <td>
+                <td data-label="Estado">
                   <app-status-badge
                     [label]="cistern.status"
-                    [tone]="
-                      cistern.status === 'Disponible' || cistern.status === 'En planta'
-                        ? 'ok'
-                        : cistern.status === 'En ruta'
-                          ? 'info'
-                          : 'warn'
-                    "
+                    [tone]="toneForCisternStatus(cistern.status)"
                   />
                 </td>
               </tr>
@@ -85,7 +80,8 @@ export class CisternsPage {
   private readonly store = inject(AdminGoStore);
   protected readonly cisterns = this.store.cisterns;
   protected readonly formatLiters = formatLiters;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly toneForCisternStatus = toneForCisternStatus;
+  protected readonly toneForDocumentStatus = toneForDocumentStatus;
 
   protected driverName(driverId: string): string {
     return this.store.driverById(driverId)?.fullName ?? '—';

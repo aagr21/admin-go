@@ -61,3 +61,57 @@
   text-align: center;
   padding: 1.5rem;
 }
+
+/* ── Formulario de alta y edición (§12) ──────────────────────────── */
+.ag-page__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ag-ink-soft);
+}
+
+.form .field input,
+.form .field select {
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--ag-radius-sm);
+  border: 1px solid var(--ag-line);
+  font: inherit;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--ag-ink);
+  background: var(--ag-surface);
+}
+
+.form__actions {
+  grid-column: 1 / -1;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.form .alert {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--ag-radius-sm);
+  background: var(--ag-warn-bg);
+  color: var(--ag-warn-ink);
+  font-size: 0.82rem;
+}

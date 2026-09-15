@@ -1,0 +1,368 @@
+<section class="ag-page">
+  <header class="ag-page__head">
+    <div>
+      <h1 class="ag-page__title">Control operativo de planta</h1>
+      <p class="ag-page__sub">
+        Programación, ejecución, evidencia y cierre de cada control de campo (§10, §11).
+      </p>
+    </div>
+    @if (canCreate) {
+      <button class="ag-btn ag-btn--primary" type="button" (click)="startCreate()">
+        Programar control
+      </button>
+    }
+  </header>
+
+  @if (creating()) {
+    <article class="ag-card">
+      <p class="ag-card__title">Programar control operativo</p>
+      <p class="ag-card__sub">
+        Paso 1 del ciclo: se define planta, turno y supervisor responsable (§10).
+      </p>
+      <form class="form" [formGroup]="createForm" (ngSubmit)="submitCreate()">
+        <label class="field">
+          <span>Planta</span>
+          <select formControlName="plantId">
+            @for (plant of plants(); track plant.id) {
+              <option [value]="plant.id">{{ plant.code }} · {{ plant.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Fecha y hora programada</span>
+          <input type="datetime-local" formControlName="scheduledAt" />
+        </label>
+
+        <label class="field">
+          <span>Turno</span>
+          <select formControlName="shift">
+            @for (shift of shifts; track shift) {
+              <option [value]="shift">{{ shift }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Supervisor asignado</span>
+          <select formControlName="supervisor">
+            @if (supervisors().length === 0) {
+              <option value="">Sin supervisores disponibles</option>
+            }
+            @for (supervisor of supervisors(); track supervisor.id) {
+              <option [value]="supervisor.fullName">{{ supervisor.fullName }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Producto</span>
+          <input type="text" formControlName="product" />
+        </label>
+
+        <label class="field">
+          <span>Volumen inicial (L)</span>
+          <input type="number" formControlName="initialVolume" min="0" />
+        </label>
+
+        <div class="ag-row form__actions">
+          <button class="ag-btn ag-btn--primary" type="submit" [disabled]="busy()">
+            Guardar programación
+          </button>
+          <button class="ag-btn" type="button" (click)="cancelCreate()">Cancelar</button>
+          @if (createForm.invalid) {
+            <span class="ag-muted">Completa todos los campos obligatorios.</span>
+          }
+        </div>
+      </form>
+    </article>
+  }
+
+  <div class="filters ag-card">
+    <label class="filter">
+      <span>Estado</span>
+      <select [value]="statusFilter()" (change)="onStatusFilter($event)">
+        <option value="all">Todos</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </label>
+    <span class="filters__count">{{ filtered().length }} controles</span>
+  </div>
+
+  <article class="ag-card ag-card--flush">
+    <div class="table-wrap">
+      <table class="ag-table ag-table--stack">
+        <thead>
+          <tr>
+            <th>Control</th>
+            <th>Planta</th>
+            <th>Programado</th>
+            <th>Turno</th>
+            <th>Supervisor</th>
+            <th class="ag-num">Saldo</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (control of filtered(); track control.id) {
+            <tr [class.row--active]="selectedId() === control.id">
+              <td data-label="Control" class="ag-mono">{{ control.code }}</td>
+              <td data-label="Planta">{{ plantLabel(control.plantId) }}</td>
+              <td data-label="Programado">{{ formatDateTime(control.scheduledAt) }}</td>
+              <td data-label="Turno">{{ control.shift }}</td>
+              <td data-label="Supervisor">{{ control.supervisor }}</td>
+              <td data-label="Saldo" class="ag-num">{{ formatLiters(control.balance) }}</td>
+              <td data-label="Estado">
+                <app-status-badge
+                  [label]="control.status"
+                  [tone]="toneForControlStatus(control.status)"
+                />
+              </td>
+              <td data-label="" class="ag-row">
+                @if (control.status === 'Programado' && canCreate) {
+                  <button class="ag-btn" type="button" (click)="registerArrival(control)">
+                    Registrar llegada
+                  </button>
+                }
+                <button class="ag-btn" type="button" (click)="select(control)">Abrir ficha</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="ag-muted empty">Sin controles para el filtro elegido.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  @if (selected(); as control) {
+    <article class="ag-card">
+      <header class="ag-card__head">
+        <div>
+          <p class="ag-card__title">{{ control.code }} · {{ plantLabel(control.plantId) }}</p>
+          <p class="ag-card__sub">
+            {{ control.controlDate }} · turno {{ control.shift }} · {{ control.supervisor }}
+          </p>
+        </div>
+        <app-status-badge [label]="control.status" [tone]="toneForControlStatus(control.status)" />
+      </header>
+
+      <dl class="grid">
+        <div>
+          <dt>Producto</dt>
+          <dd>{{ control.product }}</dd>
+        </div>
+        <div>
+          <dt>Volumen inicial</dt>
+          <dd>{{ formatLiters(control.initialVolume) }}</dd>
+        </div>
+        <div>
+          <dt>Recepciones</dt>
+          <dd>{{ formatLiters(control.receivedVolume) }}</dd>
+        </div>
+        <div>
+          <dt>Despachos</dt>
+          <dd>{{ formatLiters(control.dispatchedVolume) }}</dd>
+        </div>
+        <div>
+          <dt>Saldo</dt>
+          <dd class="strong">{{ formatLiters(control.balance) }}</dd>
+        </div>
+        <div>
+          <dt>Cisternas in / out</dt>
+          <dd>{{ control.cisternsIn }} / {{ control.cisternsOut }}</dd>
+        </div>
+        <div>
+          <dt>Precintos verificados</dt>
+          <dd>{{ control.sealsVerified }}</dd>
+        </div>
+        <div>
+          <dt>Documentos verificados</dt>
+          <dd>{{ control.documentsVerified }}</dd>
+        </div>
+        <div>
+          <dt>Llegada</dt>
+          <dd>{{ formatDateTime(control.arrivedAt) }}</dd>
+        </div>
+        <div>
+          <dt>Cierre</dt>
+          <dd>{{ formatDateTime(control.closedAt) }}</dd>
+        </div>
+      </dl>
+
+      <p class="note">{{ control.observation || 'Sin observaciones registradas.' }}</p>
+
+      <section class="block">
+        <h3>Evidencias ({{ selectedEvidences().length }})</h3>
+        @if (selectedEvidences().length === 0) {
+          <p class="ag-muted">Sin material fotográfico ni documental cargado.</p>
+        } @else {
+          <ul class="list">
+            @for (evidence of selectedEvidences(); track evidence.id) {
+              <li>
+                <span class="ag-mono">{{ evidence.fileName }}</span>
+                <span class="ag-muted"> · {{ evidence.description }}</span>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (canCreate) {
+          <div class="evidence-form">
+            <label class="field field--wide">
+              <span>Adjuntar fotografía o documento</span>
+              <input
+                type="file"
+                accept="image/*,application/pdf"
+                (change)="onEvidencePicked($event)"
+              />
+            </label>
+            <label class="field field--wide">
+              <span>Descripción</span>
+              <input
+                type="text"
+                placeholder="Precintos y medición de tanque"
+                [value]="evidenceDescription()"
+                (input)="onEvidenceDescription($event)"
+              />
+            </label>
+            @if (evidenceError(); as message) {
+              <p class="alert" role="alert">{{ message }}</p>
+            }
+            <button
+              class="ag-btn"
+              type="button"
+              (click)="attachEvidence(control)"
+              [disabled]="busy()"
+            >
+              Adjuntar evidencia
+            </button>
+          </div>
+        }
+      </section>
+
+      <section class="block">
+        <h3>Controles de producto y calidad ({{ selectedQuality().length }})</h3>
+        @if (selectedQuality().length === 0) {
+          <p class="ag-muted">No se tomaron muestras en este control.</p>
+        } @else {
+          <ul class="list">
+            @for (quality of selectedQuality(); track quality.id) {
+              <li>
+                <span class="ag-mono">{{ quality.code }}</span>
+                <span class="ag-muted">
+                  · lote {{ quality.lot }} · {{ quality.result }} ({{ quality.status }})
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="block">
+        <h3>Incidencias ({{ selectedIncidents().length }})</h3>
+        @if (selectedIncidents().length === 0) {
+          <p class="ag-muted">Sin incidencias registradas.</p>
+        } @else {
+          <ul class="list">
+            @for (incident of selectedIncidents(); track incident.id) {
+              <li>
+                <span class="ag-mono">{{ incident.code }}</span>
+                <span class="ag-muted"> · {{ incident.description }} ({{ incident.status }})</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      @if (control.reportDocumentId) {
+        <p class="note note--ok">
+          Informe generado automáticamente al cierre y adjuntado al expediente.
+        </p>
+      }
+
+      @if (control.status !== 'Cerrado' && canClose) {
+        @if (!closing()) {
+          <button class="ag-btn ag-btn--primary" type="button" (click)="startClosing()">
+            Cerrar control operativo
+          </button>
+        } @else {
+          <form class="form" [formGroup]="closeForm" (ngSubmit)="submitClosure()">
+            <label class="field">
+              <span>Recepciones (L)</span>
+              <input
+                type="number"
+                formControlName="receivedVolume"
+                min="0"
+                (input)="recalculateBalance()"
+              />
+            </label>
+            <label class="field">
+              <span>Despachos (L)</span>
+              <input
+                type="number"
+                formControlName="dispatchedVolume"
+                min="0"
+                (input)="recalculateBalance()"
+              />
+            </label>
+            <label class="field">
+              <span>Cisternas ingresadas</span>
+              <input type="number" formControlName="cisternsIn" min="0" />
+            </label>
+            <label class="field">
+              <span>Cisternas salidas</span>
+              <input type="number" formControlName="cisternsOut" min="0" />
+            </label>
+            <label class="field">
+              <span>Precintos verificados</span>
+              <input type="number" formControlName="sealsVerified" min="0" />
+            </label>
+            <label class="field">
+              <span>Documentos verificados</span>
+              <input type="number" formControlName="documentsVerified" min="0" />
+            </label>
+            <label class="field field--wide">
+              <span>Observaciones</span>
+              <textarea formControlName="observation" rows="3"></textarea>
+            </label>
+
+            <label class="check field--wide">
+              <input type="checkbox" formControlName="openIncident" />
+              <span>Registrar incidencia y escalar el control (§10)</span>
+            </label>
+
+            @if (closeForm.controls.openIncident.value) {
+              <label class="field field--wide">
+                <span>Descripción de la incidencia</span>
+                <textarea formControlName="incidentDescription" rows="2"></textarea>
+              </label>
+            }
+
+            <p class="balance">
+              Saldo proyectado:
+              <strong>{{ formatLiters(projectedBalance() ?? control.initialVolume) }}</strong>
+              <span class="ag-muted"> = inicial + recepciones − despachos (§14) </span>
+            </p>
+
+            @if (validationMessage(); as message) {
+              <p class="alert" role="alert">{{ message }}</p>
+            }
+
+            <div class="ag-row form__actions">
+              <button class="ag-btn ag-btn--primary" type="submit" [disabled]="busy()">
+                Confirmar cierre
+              </button>
+              <button class="ag-btn" type="button" (click)="cancelClosing()">Cancelar</button>
+            </div>
+          </form>
+        }
+      }
+    </article>
+  }
+</section>

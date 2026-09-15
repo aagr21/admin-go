@@ -6,7 +6,8 @@ import {
   TankMeasurement,
   Volume,
 } from '@core/models/entities';
-import { COMPANIES, OPERATIONS, PLANTS, TANKS } from './mock-data';
+import { COMPANIES, DOCUMENTS, OPERATIONS, PLANTS, TANKS } from './mock-data';
+import { EVIDENCES, INCIDENTS, QUALITY_CONTROLS } from './mock-activity';
 
 /**
  * Declaraciones, controles operativos, auditoría y movimientos volumétricos
@@ -36,6 +37,14 @@ const DECLARATION_SEEDS: DeclarationSeed[] = [
   ['2026-05', 44, 1_320_900, 878_100, 450, 44, 'ok', 'Presentada', '2026-06-11T14:30:00'],
 ];
 
+const DECLARATION_COMPANY = COMPANIES[0].id;
+const COMPANY_OPERATION_IDS = OPERATIONS.filter(
+  (operation) => operation.companyId === DECLARATION_COMPANY,
+).map((operation) => operation.id);
+const COMPANY_DOCUMENT_IDS = DOCUMENTS.filter(
+  (document) => document.companyId === DECLARATION_COMPANY,
+).map((document) => document.id);
+
 export const DECLARATIONS: Declaration[] = DECLARATION_SEEDS.map(
   (
     [
@@ -53,17 +62,19 @@ export const DECLARATIONS: Declaration[] = DECLARATION_SEEDS.map(
   ) => ({
     id: `dcl-${i + 1}`,
     code: `DEC-AND-${period}`,
-    companyId: COMPANIES[0].id,
+    companyId: DECLARATION_COMPANY,
     period,
-    operationsCount,
+    // Las listas son la fuente de verdad; los conteos se derivan de ellas (§17).
+    operationIds: COMPANY_OPERATION_IDS.slice(0, operationsCount),
+    documentIds: COMPANY_DOCUMENT_IDS.slice(0, documentsCount),
     totalVolume,
     closingInventory,
     adjustments,
-    documentsCount,
     validation,
     status,
     responsible: 'Iván Terceros',
     presentedAt,
+    version: 1 + (i % 2),
   }),
 );
 
@@ -89,10 +100,15 @@ const CONTROL_SEEDS: ControlSeed[] = [
 export const OPERATIONAL_CONTROLS: OperationalControl[] = CONTROL_SEEDS.map(
   ([plantIdx, shift, initialVolume, receivedVolume, dispatchedVolume, status], i) => {
     const plant = PLANTS[plantIdx];
+    const id = `ctl-${i + 1}`;
+    const controlDate = `2026-09-${pad(12 + (i % 2))}`;
+    const closed = status === 'Cerrado' || status === 'Escalado';
     return {
-      id: `ctl-${i + 1}`,
+      id,
+      code: `CTL-2026-${String(i + 1).padStart(6, '0')}`,
       plantId: plant.id,
-      controlDate: `2026-09-${pad(12 + (i % 2))}`,
+      scheduledAt: `${controlDate}T06:30:00`,
+      controlDate,
       shift,
       supervisor: i % 2 === 0 ? 'Ramiro Loza' : 'Nicolás Vargas',
       product: 'Diésel Importado',
@@ -104,13 +120,18 @@ export const OPERATIONAL_CONTROLS: OperationalControl[] = CONTROL_SEEDS.map(
       cisternsOut: dispatchedVolume > 0 ? 2 : 0,
       sealsVerified: 4 + i,
       documentsVerified: 6 + i,
-      incidentsCount: i % 3 === 0 ? 1 : 0,
-      photosCount: 8 + i * 2,
+      // Las evidencias e incidencias se resuelven desde su propio listado (§10).
+      evidenceIds: EVIDENCES.filter((evidence) => evidence.controlId === id).map((e) => e.id),
+      incidentIds: INCIDENTS.filter((incident) => incident.controlId === id).map((n) => n.id),
+      qualityControlIds: i % 2 === 0 ? [QUALITY_CONTROLS[i % QUALITY_CONTROLS.length].id] : [],
       observation:
         status === 'Escalado'
           ? 'Diferencia volumétrica fuera de umbral, escalada al gerente.'
           : 'Control sin observaciones mayores.',
       status,
+      arrivedAt: `${controlDate}T07:05:00`,
+      closedAt: closed ? `${controlDate}T17:40:00` : null,
+      reportDocumentId: closed ? `doc-${(i % DOCUMENTS.length) + 1}` : null,
     };
   },
 );

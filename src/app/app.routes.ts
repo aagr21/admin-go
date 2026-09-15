@@ -36,6 +36,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'controls',
+        loadComponent: () =>
+          import('./features/controls/controls.page').then((m) => m.ControlsPage),
+      },
+      {
+        path: 'compliance',
+        loadComponent: () =>
+          import('./features/compliance/compliance.page').then((m) => m.CompliancePage),
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./features/users/users.page').then((m) => m.UsersPage),
+      },
+      {
         path: 'plants',
         loadComponent: () => import('./features/plants/plants').then((m) => m.Plants),
       },

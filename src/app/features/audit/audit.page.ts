@@ -15,7 +15,7 @@ import { formatDateTime } from '@shared/util/format';
         </div>
       </header>
       <article class="ag-card ag-card--flush">
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Usuario</th>
@@ -30,13 +30,13 @@ import { formatDateTime } from '@shared/util/format';
           <tbody>
             @for (log of logs(); track log.id) {
               <tr>
-                <td class="ag-mono">{{ log.username }}</td>
-                <td>{{ formatDateTime(log.at) }}</td>
-                <td class="ag-mono">{{ log.entityRef }}</td>
-                <td>{{ log.field }}</td>
-                <td class="ag-muted">{{ log.previousValue }}</td>
-                <td class="strong">{{ log.newValue }}</td>
-                <td>{{ log.action }}</td>
+                <td data-label="Usuario" class="ag-mono">{{ log.username }}</td>
+                <td data-label="Fecha / hora">{{ formatDateTime(log.at) }}</td>
+                <td data-label="Entidad" class="ag-mono">{{ log.entityRef }}</td>
+                <td data-label="Campo">{{ log.field }}</td>
+                <td data-label="Anterior" class="ag-muted">{{ log.previousValue }}</td>
+                <td data-label="Nuevo" class="strong">{{ log.newValue }}</td>
+                <td data-label="Acción">{{ log.action }}</td>
               </tr>
             }
           </tbody>

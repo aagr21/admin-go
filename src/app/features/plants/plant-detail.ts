@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { RouterLink } from '@angular/router';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
+import { formatDateTime, formatLiters } from '@shared/util/format';
 import {
-  formatDateTime,
-  formatLiters,
   labelForPlantStatus,
-  toneForStatus,
-} from '@shared/util/format';
+  toneForAlertSeverity,
+  toneForControlStatus,
+  toneForOperationStatus,
+  toneForPlantStatus,
+} from '@shared/util/status';
 
 /** Ficha individual de planta — toda su operación (§9, §11). */
 @Component({
@@ -42,5 +44,8 @@ export class PlantDetail {
   protected readonly formatLiters = formatLiters;
   protected readonly formatDateTime = formatDateTime;
   protected readonly labelForPlantStatus = labelForPlantStatus;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly toneForPlantStatus = toneForPlantStatus;
+  protected readonly toneForOperationStatus = toneForOperationStatus;
+  protected readonly toneForAlertSeverity = toneForAlertSeverity;
+  protected readonly toneForControlStatus = toneForControlStatus;
 }

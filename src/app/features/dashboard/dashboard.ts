@@ -3,13 +3,12 @@ import { RouterLink } from '@angular/router';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { KpiCard } from '@shared/ui/kpi-card';
 import { StatusBadge } from '@shared/ui/status-badge';
+import { formatLiters, formatPercent, Tone } from '@shared/util/format';
 import {
-  differenceTone,
-  formatLiters,
-  formatPercent,
-  Tone,
-  toneForStatus,
-} from '@shared/util/format';
+  toneForAlertSeverity,
+  toneForOperationStatus,
+  toneForVolumeDifference,
+} from '@shared/util/status';
 
 /** Torre de Control — visión nacional consolidada de toda la operación (§8). */
 @Component({
@@ -29,8 +28,15 @@ export class Dashboard {
 
   protected readonly formatLiters = formatLiters;
   protected readonly formatPercent = formatPercent;
-  protected readonly toneForStatus = toneForStatus;
-  protected readonly volumeDiffTone = computed(() => differenceTone(this.kpis().volumeDifference));
+  protected readonly toneForAlertSeverity = toneForAlertSeverity;
+  protected readonly toneForOperationStatus = toneForOperationStatus;
+  protected readonly volumeDiffTone = computed(() =>
+    toneForVolumeDifference(
+      this.kpis().volumeDifference,
+      this.kpis().theoreticalInventory,
+      this.store.maxVolumeDifferencePercent(),
+    ),
+  );
 
   /** Semáforo del AdminScore global: verde ≥ 80, amarillo ≥ 60, rojo por debajo. */
   protected scoreTone(score: number): Tone {

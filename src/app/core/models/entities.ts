@@ -2,10 +2,13 @@ import {
   AlertSeverity,
   AlertStatus,
   AlertType,
+  CisternStatus,
   ComplianceLevel,
+  ControlShift,
   ControlStatus,
   DeclarationStatus,
   DocumentStatus,
+  IncidentStatus,
   OperationStatus,
   OperationType,
   PlantStatus,
@@ -73,11 +76,17 @@ export interface Station extends BaseEntity {
   companyId: string;
   city: string;
   manager: string;
+  /** Productos que comercializa la estación (§20). */
+  products: string[];
   tanks: number;
+  /** Capacidad total instalada de sus tanques, en litros (§20). */
+  capacity: number;
   inventory: number;
   receivedToday: number;
   dispatchedToday: number;
   status: PlantStatus;
+  /** Peor estado documental de sus expedientes (§20 «Documentación»). */
+  documentStatus: DocumentStatus;
 }
 
 export interface Tank extends BaseEntity {
@@ -113,7 +122,7 @@ export interface Cistern extends BaseEntity {
   driverId: string;
   capacity: number;
   sealCodes: string[];
-  status: 'Disponible' | 'En ruta' | 'En planta' | 'Mantenimiento';
+  status: CisternStatus;
   documentStatus: DocumentStatus;
   operationsCount: number;
 }
@@ -187,6 +196,22 @@ export interface Requirement extends BaseEntity {
   appliesTo: 'cliente' | 'actividad' | 'vehículo' | 'instalación';
   mandatory: boolean;
   validityDays: number;
+  /** Tipos de cliente a los que aplica; vacío = todos (§16). */
+  clientKinds: Company['kind'][];
+  /** Permite retirar un requisito sin borrar historial (§16, §27). */
+  active: boolean;
+}
+
+/** Versión de un expediente: cada carga genera una nueva (§15 «Versiones»). */
+export interface DocumentVersion {
+  version: number;
+  uploadedAt: string;
+  uploadedBy: string;
+  fileName: string;
+  mimeType: string;
+  /** Tamaño en bytes; el contenido binario lo custodiará el backend (§29). */
+  sizeBytes: number;
+  note: string | null;
 }
 
 /** Documento cargado. Se llama `AgDocument` para no colisionar con el DOM `Document`. */
@@ -195,13 +220,17 @@ export interface AgDocument extends BaseEntity {
   name: string;
   category: string;
   companyId: string;
+  /** Instalación a la que aplica, para la documentación de EESS (§20). */
+  stationId: string | null;
   operationId: string | null;
   issuedAt: string;
   expiresAt: string | null;
   status: DocumentStatus;
   responsible: string;
-  version: number;
+  /** Historial completo de cargas; la vigente es la última (§15). */
+  versions: DocumentVersion[];
   observation: string | null;
+  evidenceIds: string[];
 }
 
 export interface Evidence extends BaseEntity {
@@ -213,6 +242,10 @@ export interface Evidence extends BaseEntity {
   operationId: string | null;
   plantId: string | null;
   tankId: string | null;
+  /** Documento que respalda esta evidencia (§15). */
+  documentId: string | null;
+  /** Control operativo del que forma parte (§10). */
+  controlId: string | null;
 }
 
 /* ── Alertas e incidencias (§25) ──────────────────────────────────── */
@@ -223,6 +256,10 @@ export interface Alert extends BaseEntity {
   message: string;
   entityRef: string;
   plantId: string | null;
+  /** Estación afectada, cuando la alerta no es de planta (§20, §25). */
+  stationId: string | null;
+  /** Origen de la alerta: derivada por reglas o registrada a mano (§25). */
+  source: 'regla' | 'manual';
   createdAt: string;
 }
 
@@ -230,11 +267,15 @@ export interface Incident extends BaseEntity {
   code: string;
   plantId: string | null;
   operationId: string | null;
+  /** Cisterna implicada, cuando la incidencia es del vehículo (§19). */
+  cisternId: string | null;
+  /** Control operativo donde se detectó, si aplica (§10). */
+  controlId: string | null;
   description: string;
   severity: AlertSeverity;
   openedAt: string;
   closedAt: string | null;
-  status: 'Abierta' | 'En revisión' | 'Cerrada';
+  status: IncidentStatus;
 }
 
 /* ── Producto y calidad (§22) ─────────────────────────────────────── */
@@ -259,36 +300,54 @@ export interface Declaration extends BaseEntity {
   code: string;
   companyId: string;
   period: string;
-  operationsCount: number;
+  /** Operaciones consolidadas en el periodo (§17). */
+  operationIds: string[];
+  /** Documentos que respaldan la declaración (§17). */
+  documentIds: string[];
   totalVolume: number;
   closingInventory: number;
   adjustments: number;
-  documentsCount: number;
   validation: ComplianceLevel;
   status: DeclarationStatus;
   responsible: string;
   presentedAt: string | null;
+  /** Número de versión de la declaración (§17 «Versiones»). */
+  version: number;
 }
 
 /* ── Control operativo de planta (§10, §11) ───────────────────────── */
 export interface OperationalControl extends BaseEntity {
+  /** Identificador visible del control, p. ej. CTL-2026-000012 (§10). */
+  code: string;
   plantId: string;
+  /** Programación del control (§10). */
+  scheduledAt: string;
   controlDate: string;
-  shift: 'Mañana' | 'Tarde' | 'Noche';
+  shift: ControlShift;
   supervisor: string;
   product: string;
   initialVolume: number;
   receivedVolume: number;
   dispatchedVolume: number;
+  /** Saldo = inicial + recepciones − despachos (§14). */
   balance: number;
   cisternsIn: number;
   cisternsOut: number;
   sealsVerified: number;
   documentsVerified: number;
-  incidentsCount: number;
-  photosCount: number;
+  /** Evidencias fotográficas/documentales del control (§10). */
+  evidenceIds: string[];
+  /** Incidencias levantadas durante el control (§10). */
+  incidentIds: string[];
+  /** Controles de producto/calidad tomados en el control (§10, §22). */
+  qualityControlIds: string[];
   observation: string;
   status: ControlStatus;
+  /** Marcas del ciclo de vida (§10): llegada, cierre e informe. */
+  arrivedAt: string | null;
+  closedAt: string | null;
+  /** Documento con el informe generado al cerrar (§10). */
+  reportDocumentId: string | null;
 }
 
 /* ── Auditoría (§27) ──────────────────────────────────────────────── */

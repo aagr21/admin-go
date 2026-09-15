@@ -22,6 +22,16 @@ const pad = (n: number, size = 2): string => String(n).padStart(size, '0');
 
 /* ── Empresas (§7) ───────────────────────────────────────────────── */
 export const COMPANIES: Company[] = [
+  // AdminGo es también una empresa: su personal pertenece a ella (§6).
+  {
+    id: 'cmp-0',
+    name: 'AdminGo',
+    nit: '1023456000',
+    kind: 'Operador',
+    contactName: 'Arnol Guevara',
+    contactEmail: 'admin@admingo.bo',
+    active: true,
+  },
   {
     id: 'cmp-1',
     name: 'Andina Petrol Import S.A.',
@@ -124,8 +134,6 @@ export const PLANTS: Plant[] = PLANT_SEEDS.map(
   },
 );
 
-export const PLANTS_BY_ID = new Map(PLANTS.map((p) => [p.id, p]));
-
 /* ── Estaciones de servicio (§20) ────────────────────────────────── */
 type StationSeed = [
   code: string,
@@ -152,11 +160,19 @@ export const STATIONS: Station[] = STATION_SEEDS.map(
     companyId,
     city,
     manager,
+    products: i % 2 === 0 ? ['Diésel Importado'] : ['Diésel Importado', 'Gasolina Especial'],
     tanks: 3,
+    capacity: 150_000 + i * 20_000,
     inventory: 120_000 + i * 18_000,
     receivedToday: 28_000 + i * 4_100,
     dispatchedToday: 19_000 + i * 3_700,
     status,
+    documentStatus:
+      i === 4
+        ? ('Vencido' as const)
+        : i === 2
+          ? ('Próximo a vencer' as const)
+          : ('Vigente' as const),
   }),
 );
 
@@ -242,6 +258,14 @@ const REQUIREMENT_SEEDS: RequirementSeed[] = [
   ['REQ-OPE-01', 'Planilla de despacho firmada', 'actividad', false, 90],
 ];
 
+/** Tipos de cliente a los que aplica cada tipo de requisito (§16). */
+const CLIENT_KINDS_BY_SCOPE: Record<Requirement['appliesTo'], Company['kind'][]> = {
+  cliente: [],
+  actividad: [],
+  vehículo: ['Transportista'],
+  instalación: ['Estación de servicio', 'Operador'],
+};
+
 export const REQUIREMENTS: Requirement[] = REQUIREMENT_SEEDS.map(
   ([code, name, appliesTo, mandatory, validityDays], i) => ({
     id: `req-${i + 1}`,
@@ -250,6 +274,8 @@ export const REQUIREMENTS: Requirement[] = REQUIREMENT_SEEDS.map(
     appliesTo,
     mandatory,
     validityDays,
+    clientKinds: CLIENT_KINDS_BY_SCOPE[appliesTo],
+    active: true,
   }),
 );
 
@@ -499,8 +525,6 @@ export const OPERATIONS: Operation[] = OPERATION_SEEDS.map((seed, i) => {
   };
 });
 
-export const OPERATIONS_BY_CODE = new Map(OPERATIONS.map((o) => [o.code, o]));
-
 /* ── Documentos (§15) ───────────────────────────────────────────── */
 type DocumentSeed = [
   name: string,
@@ -510,6 +534,7 @@ type DocumentSeed = [
   issuedAt: string,
   expiresAt: string | null,
   status: AgDocument['status'],
+  stationIdx?: number,
 ];
 
 const DOCUMENT_SEEDS: DocumentSeed[] = [
@@ -571,7 +596,7 @@ const DOCUMENT_SEEDS: DocumentSeed[] = [
     'Vigente',
   ],
   ['Manifiesto de carga AG-DI-000005', 'Operativo', 'cmp-2', 4, '2026-09-12', null, 'Observado'],
-  ['Autorización EESS-005', 'Regulatorio', 'cmp-4', -1, '2024-08-01', '2026-08-01', 'Vencido'],
+  ['Autorización EESS-005', 'Regulatorio', 'cmp-4', -1, '2024-08-01', '2026-08-01', 'Vencido', 4],
   [
     'Certificado ambiental planta TDD',
     'Ambiental',
@@ -594,18 +619,38 @@ const DOCUMENT_SEEDS: DocumentSeed[] = [
 ];
 
 export const DOCUMENTS: AgDocument[] = DOCUMENT_SEEDS.map(
-  ([name, category, companyId, operationIdx, issuedAt, expiresAt, status], i) => ({
-    id: `doc-${i + 1}`,
-    code: REQUIREMENTS[i % REQUIREMENTS.length].code,
-    name,
-    category,
-    companyId,
-    operationId: operationIdx >= 0 ? OPERATIONS[operationIdx].id : null,
-    issuedAt,
-    expiresAt,
-    status,
-    responsible: i % 2 === 0 ? 'Iván Terceros' : 'Marcela Rojas',
-    version: 1 + (i % 3),
-    observation: status === 'Observado' ? 'Falta firma del responsable de planta.' : null,
-  }),
+  ([name, category, companyId, operationIdx, issuedAt, expiresAt, status, stationIdx], i) => {
+    const totalVersions = 1 + (i % 3);
+    const responsible = i % 2 === 0 ? 'Iván Terceros' : 'Marcela Rojas';
+    const slug = name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    return {
+      id: `doc-${i + 1}`,
+      code: REQUIREMENTS[i % REQUIREMENTS.length].code,
+      name,
+      category,
+      companyId,
+      stationId: stationIdx === undefined ? null : STATIONS[stationIdx].id,
+      operationId: operationIdx >= 0 ? OPERATIONS[operationIdx].id : null,
+      issuedAt,
+      expiresAt,
+      status,
+      responsible,
+      versions: Array.from({ length: totalVersions }, (_, v) => ({
+        version: v + 1,
+        uploadedAt: `${issuedAt}T09:00:00`,
+        uploadedBy: responsible,
+        fileName: `${slug}-v${v + 1}.pdf`,
+        mimeType: 'application/pdf',
+        sizeBytes: 180_000 + v * 24_000,
+        note: v === 0 ? 'Carga inicial del expediente.' : `Actualización v${v + 1}.`,
+      })),
+      observation: status === 'Observado' ? 'Falta firma del responsable de planta.' : null,
+      evidenceIds: i % 4 === 0 ? [`evd-${i + 1}`] : [],
+    } satisfies AgDocument;
+  },
 );

@@ -9,7 +9,7 @@
         </p>
       </div>
       <div class="ag-row">
-        <app-status-badge [label]="op.status" [tone]="toneForStatus(op.status)" />
+        <app-status-badge [label]="op.status" [tone]="toneForOperationStatus(op.status)" />
         <span class="qr" title="Identificador seguro de la operación (§24)">QR</span>
       </div>
     </header>
@@ -91,7 +91,7 @@
         <header class="ag-card__head card-pad">
           <p class="ag-card__title">Documentos asociados ({{ documents().length }})</p>
         </header>
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Código</th>
@@ -104,14 +104,14 @@
           <tbody>
             @for (document of documents(); track document.id) {
               <tr>
-                <td class="ag-mono">{{ document.code }}</td>
-                <td>{{ document.name }}</td>
-                <td>{{ document.issuedAt }}</td>
-                <td>{{ document.expiresAt ?? '—' }}</td>
-                <td>
+                <td data-label="Código" class="ag-mono">{{ document.code }}</td>
+                <td data-label="Documento">{{ document.name }}</td>
+                <td data-label="Emisión">{{ document.issuedAt }}</td>
+                <td data-label="Vencimiento">{{ document.expiresAt ?? '—' }}</td>
+                <td data-label="Estado">
                   <app-status-badge
                     [label]="document.status"
-                    [tone]="toneForStatus(document.status)"
+                    [tone]="toneForDocumentStatus(document.status)"
                   />
                 </td>
               </tr>
@@ -148,7 +148,7 @@
       <header class="ag-card__head card-pad">
         <p class="ag-card__title">Incidencias ({{ incidents().length }})</p>
       </header>
-      <table class="ag-table">
+      <table class="ag-table ag-table--stack">
         <thead>
           <tr>
             <th>Código</th>
@@ -160,13 +160,13 @@
         <tbody>
           @for (incident of incidents(); track incident.id) {
             <tr>
-              <td class="ag-mono">{{ incident.code }}</td>
-              <td>{{ incident.description }}</td>
-              <td>{{ formatDateTime(incident.openedAt) }}</td>
-              <td>
+              <td data-label="Código" class="ag-mono">{{ incident.code }}</td>
+              <td data-label="Descripción">{{ incident.description }}</td>
+              <td data-label="Apertura">{{ formatDateTime(incident.openedAt) }}</td>
+              <td data-label="Estado">
                 <app-status-badge
                   [label]="incident.status"
-                  [tone]="toneForStatus(incident.severity)"
+                  [tone]="toneForAlertSeverity(incident.severity)"
                 />
               </td>
             </tr>

@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Tank } from '@core/models/entities';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import { differenceTone, formatDateTime, formatLiters, toneForStatus } from '@shared/util/format';
+import { formatDateTime, formatLiters } from '@shared/util/format';
+import {
+  labelForPlantStatus,
+  toneForPlantStatus,
+  toneForVolumeDifference,
+} from '@shared/util/status';
 
 /** Módulo Tanques — capacidad, mediciones, inventarios y diferencias (§21). */
 @Component({
@@ -19,7 +25,7 @@ import { differenceTone, formatDateTime, formatLiters, toneForStatus } from '@sh
         </div>
       </header>
       <article class="ag-card ag-card--flush">
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Código</th>
@@ -36,23 +42,25 @@ import { differenceTone, formatDateTime, formatLiters, toneForStatus } from '@sh
           <tbody>
             @for (tank of tanks(); track tank.id) {
               <tr>
-                <td class="ag-mono">{{ tank.code }}</td>
-                <td>{{ stationName(tank.stationId) }}</td>
-                <td>{{ tank.product }}</td>
-                <td class="ag-num">{{ formatLiters(tank.capacity) }}</td>
-                <td class="ag-num">{{ formatLiters(tank.physicalVolume) }}</td>
-                <td class="ag-num">{{ formatLiters(tank.theoreticalVolume) }}</td>
-                <td class="ag-num">
+                <td data-label="Código" class="ag-mono">{{ tank.code }}</td>
+                <td data-label="Estación">{{ stationName(tank.stationId) }}</td>
+                <td data-label="Producto">{{ tank.product }}</td>
+                <td data-label="Capacidad" class="ag-num">{{ formatLiters(tank.capacity) }}</td>
+                <td data-label="Físico" class="ag-num">{{ formatLiters(tank.physicalVolume) }}</td>
+                <td data-label="Teórico" class="ag-num">
+                  {{ formatLiters(tank.theoreticalVolume) }}
+                </td>
+                <td data-label="Diferencia" class="ag-num">
                   <app-status-badge
                     [label]="formatLiters(tank.physicalVolume - tank.theoreticalVolume)"
-                    [tone]="differenceTone(tank.physicalVolume - tank.theoreticalVolume)"
+                    [tone]="volumeDiffTone(tank)"
                   />
                 </td>
-                <td>{{ formatDateTime(tank.lastMeasuredAt) }}</td>
-                <td>
+                <td data-label="Última medición">{{ formatDateTime(tank.lastMeasuredAt) }}</td>
+                <td data-label="Estado">
                   <app-status-badge
-                    [label]="tank.status === 'green' ? 'Normal' : 'Observado'"
-                    [tone]="toneForStatus(tank.status)"
+                    [label]="labelForPlantStatus(tank.status)"
+                    [tone]="toneForPlantStatus(tank.status)"
                   />
                 </td>
               </tr>
@@ -68,8 +76,17 @@ export class TanksPage {
   protected readonly tanks = this.store.tanks;
   protected readonly formatLiters = formatLiters;
   protected readonly formatDateTime = formatDateTime;
-  protected readonly differenceTone = differenceTone;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly labelForPlantStatus = labelForPlantStatus;
+  protected readonly toneForPlantStatus = toneForPlantStatus;
+
+  /** Semáforo de la diferencia físico/teórico con el umbral configurado (§14). */
+  protected volumeDiffTone(tank: Tank) {
+    return toneForVolumeDifference(
+      tank.physicalVolume - tank.theoreticalVolume,
+      tank.theoreticalVolume,
+      this.store.maxVolumeDifferencePercent(),
+    );
+  }
 
   protected stationName(stationId: string): string {
     return this.store.stationById(stationId)?.name ?? '—';

@@ -11,20 +11,30 @@ import {
   Station,
   Tank,
 } from '@core/models/entities';
+import { DocumentStatus, QualityStatus } from '@core/models/enums';
+import { DATASET_DATE_ISO, datasetDate } from '@core/data/dataset-date';
+import {
+  classifyVolumeDifference,
+  DifferenceLevel,
+  volumeDifferencePercent,
+} from '@core/rules/volume-difference';
 import {
   daysUntil,
   formatDate,
+  formatDateNumeric,
   formatDateTime,
   formatLiters,
   formatPercent,
-  labelForCompliance,
-  labelForPlantStatus,
-  labelForSeverity,
 } from '@shared/util/format';
+import {
+  labelForAlertSeverity,
+  labelForComplianceLevel,
+  labelForPlantStatus,
+} from '@shared/util/status';
 import { ReportColumn, ReportData } from '@shared/services/report-export.service';
 
-/** Fecha de corte del dataset de demostración (coherente con daysUntil). */
-export const REPORT_DATE_CUT = '14/09/2026';
+/** Corte del dataset de demostración, derivado de su única fuente de verdad. */
+export const REPORT_DATE_CUT = formatDateNumeric(DATASET_DATE_ISO);
 
 const col = (header: string, align: 'left' | 'right' = 'left'): ReportColumn => ({
   header,
@@ -33,12 +43,16 @@ const col = (header: string, align: 'left' | 'right' = 'left'): ReportColumn => 
 
 const num = col;
 
+/** Etiqueta legible de cada grado de desviación volumétrica (§14). */
+const LABEL_BY_DIFFERENCE_LEVEL: Record<DifferenceLevel, string> = {
+  conforme: 'Conforme',
+  observado: 'Observado',
+  critico: 'Crítico',
+};
+
 /** Clasifica una diferencia % según el umbral configurable (§14). */
-export function differenceLabel(percentAbs: number, thresholdPercent: number): string {
-  if (percentAbs > thresholdPercent) {
-    return 'Crítico';
-  }
-  return percentAbs > thresholdPercent / 2 ? 'Observado' : 'Conforme';
+export function differenceLabel(percentDifference: number, thresholdPercent: number): string {
+  return LABEL_BY_DIFFERENCE_LEVEL[classifyVolumeDifference(percentDifference, thresholdPercent)];
 }
 
 /** §26 — Reporte diario de planta. */
@@ -230,9 +244,13 @@ export function tanksReport(tanks: Tank[]): ReportData {
 }
 
 /** §26/§15 — Vencimientos documentales. */
-export function documentsReport(documents: AgDocument[], warningDays: number): ReportData {
-  const classified = classifiedDocuments(documents, warningDays);
-  const count = (status: string): number =>
+export function documentsReport(
+  documents: AgDocument[],
+  warningDays: number,
+  reference: Date = datasetDate(),
+): ReportData {
+  const classified = classifiedDocuments(documents, warningDays, reference);
+  const count = (status: DocumentStatus): number =>
     classified.filter((item) => item.status === status).length;
 
   return {
@@ -301,11 +319,11 @@ export function declarationsReport(
       declaration.code,
       companyNames.get(declaration.companyId) ?? declaration.companyId,
       declaration.period,
-      String(declaration.operationsCount),
+      String(declaration.operationIds.length),
       formatLiters(declaration.totalVolume),
       formatLiters(declaration.closingInventory),
       formatLiters(declaration.adjustments),
-      labelForCompliance(declaration.validation),
+      labelForComplianceLevel(declaration.validation),
       declaration.status,
       formatDate(declaration.presentedAt),
     ]),
@@ -314,7 +332,7 @@ export function declarationsReport(
         'TOTAL',
         `${declarations.length} declaraciones`,
         '',
-        String(declarations.reduce((sum, d) => sum + d.operationsCount, 0)),
+        String(declarations.reduce((sum, d) => sum + d.operationIds.length, 0)),
         formatLiters(declarations.reduce((sum, d) => sum + d.totalVolume, 0)),
         formatLiters(declarations.reduce((sum, d) => sum + d.closingInventory, 0)),
         formatLiters(declarations.reduce((sum, d) => sum + d.adjustments, 0)),
@@ -334,7 +352,7 @@ export function alertsReport(alerts: Alert[], incidents: Incident[]): ReportData
   const rows: string[][] = [
     ...alerts.map((alert) => [
       'Alerta',
-      labelForSeverity(alert.severity),
+      labelForAlertSeverity(alert.severity),
       alert.type,
       alert.message,
       alert.entityRef,
@@ -343,7 +361,7 @@ export function alertsReport(alerts: Alert[], incidents: Incident[]): ReportData
     ]),
     ...incidents.map((incident) => [
       'Incidencia',
-      labelForSeverity(incident.severity),
+      labelForAlertSeverity(incident.severity),
       incident.code,
       incident.description,
       incident.plantId ?? '—',
@@ -385,10 +403,9 @@ export function alertsReport(alerts: Alert[], incidents: Incident[]): ReportData
 export function volumeDifferencesReport(tanks: Tank[], thresholdPercent: number): ReportData {
   const difference = (tank: Tank): number => tank.physicalVolume - tank.theoreticalVolume;
   const percent = (tank: Tank): number =>
-    tank.theoreticalVolume ? (difference(tank) / tank.theoreticalVolume) * 100 : 0;
+    volumeDifferencePercent(difference(tank), tank.theoreticalVolume);
   const count = (label: string): number =>
-    tanks.filter((tank) => differenceLabel(Math.abs(percent(tank)), thresholdPercent) === label)
-      .length;
+    tanks.filter((tank) => differenceLabel(percent(tank), thresholdPercent) === label).length;
 
   return {
     slug: 'diferencias-volumetricas',
@@ -411,7 +428,7 @@ export function volumeDifferencesReport(tanks: Tank[], thresholdPercent: number)
       formatLiters(tank.theoreticalVolume),
       formatLiters(difference(tank)),
       formatPercent(percent(tank)),
-      differenceLabel(Math.abs(percent(tank)), thresholdPercent),
+      differenceLabel(percent(tank), thresholdPercent),
     ]),
     foot: [
       [
@@ -429,7 +446,7 @@ export function volumeDifferencesReport(tanks: Tank[], thresholdPercent: number)
 
 /** §26/§22 — Controles de calidad y certificados. */
 export function qualityReport(controls: QualityControl[]): ReportData {
-  const byStatus = (status: string): number =>
+  const byStatus = (status: QualityStatus): number =>
     controls.filter((control) => control.status === status).length;
 
   return {
@@ -508,14 +525,19 @@ export function executiveSummaryReport(
   };
 }
 
-/** Clasificación documental según la vigencia configurada (§15, §26). */
+/**
+ * Clasificación documental según la vigencia configurada (§15, §26).
+ * La fecha de referencia es inyectable para poder probar sin depender del
+ * dataset de demostración.
+ */
 export function classifiedDocuments(
   documents: AgDocument[],
   warningDays: number,
-): { document: AgDocument; days: number | null; status: string }[] {
+  reference: Date = datasetDate(),
+): { document: AgDocument; days: number | null; status: DocumentStatus }[] {
   return documents.map((document) => {
-    const days = daysUntil(document.expiresAt);
-    let status: string = document.status;
+    const days = daysUntil(document.expiresAt, reference);
+    let status: DocumentStatus = document.status;
     if (days !== null) {
       if (days < 0) {
         status = 'Vencido';

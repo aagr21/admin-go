@@ -138,7 +138,10 @@
         <ul class="alert-list">
           @for (alert of criticalAlerts(); track alert.id) {
             <li class="alert-list__item">
-              <app-status-badge [label]="alert.type" [tone]="toneForStatus(alert.severity)" />
+              <app-status-badge
+                [label]="alert.type"
+                [tone]="toneForAlertSeverity(alert.severity)"
+              />
               <p class="alert-list__msg">{{ alert.message }}</p>
               <span class="alert-list__ref ag-mono">{{ alert.entityRef }}</span>
             </li>
@@ -155,7 +158,7 @@
       <p class="ag-card__title">Operaciones recientes</p>
       <a class="ag-btn" routerLink="/operations">Todas las operaciones</a>
     </header>
-    <table class="ag-table">
+    <table class="ag-table ag-table--stack">
       <thead>
         <tr>
           <th>Identificador</th>
@@ -169,19 +172,23 @@
       <tbody>
         @for (operation of operations(); track operation.id) {
           <tr>
-            <td>
+            <td data-label="Identificador">
               <a class="link ag-mono" [routerLink]="['/operations', operation.code]">{{
                 operation.code
               }}</a>
             </td>
-            <td>{{ operation.type }}</td>
-            <td>{{ operation.product }}</td>
-            <td class="ag-num">{{ formatLiters(operation.documentedVolume) }}</td>
-            <td class="ag-num">{{ formatLiters(operation.receivedVolume) }}</td>
-            <td>
+            <td data-label="Tipo">{{ operation.type }}</td>
+            <td data-label="Producto">{{ operation.product }}</td>
+            <td data-label="Documentado" class="ag-num">
+              {{ formatLiters(operation.documentedVolume) }}
+            </td>
+            <td data-label="Recibido" class="ag-num">
+              {{ formatLiters(operation.receivedVolume) }}
+            </td>
+            <td data-label="Estado">
               <app-status-badge
                 [label]="operation.status"
-                [tone]="toneForStatus(operation.status)"
+                [tone]="toneForOperationStatus(operation.status)"
               />
             </td>
           </tr>

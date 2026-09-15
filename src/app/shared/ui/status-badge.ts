@@ -24,33 +24,33 @@ import { Tone } from '../util/format';
     }
 
     .badge--ok {
-      background: #dcfce7;
-      color: #166534;
-      border-color: #bbf7d0;
+      background: var(--ag-ok-bg);
+      color: var(--ag-ok-ink);
+      border-color: var(--ag-ok-line);
     }
 
     .badge--warn {
-      background: #fef3c7;
-      color: #92400e;
-      border-color: #fde68a;
+      background: var(--ag-warn-bg);
+      color: var(--ag-warn-ink);
+      border-color: var(--ag-warn-line);
     }
 
     .badge--danger {
-      background: #fee2e2;
-      color: #991b1b;
-      border-color: #fecaca;
+      background: var(--ag-danger-bg);
+      color: var(--ag-danger-ink);
+      border-color: var(--ag-danger-line);
     }
 
     .badge--info {
-      background: #dbeafe;
-      color: #1e40af;
-      border-color: #bfdbfe;
+      background: var(--ag-info-bg);
+      color: var(--ag-info-ink);
+      border-color: var(--ag-info-line);
     }
 
     .badge--neutral {
-      background: #f1f5f9;
-      color: #475569;
-      border-color: #e2e8f0;
+      background: var(--ag-neutral-bg);
+      color: var(--ag-neutral-ink);
+      border-color: var(--ag-neutral-line);
     }
   `,
 })

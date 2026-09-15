@@ -2,12 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import {
-  formatDateTime,
-  formatLiters,
-  labelForPlantStatus,
-  toneForStatus,
-} from '@shared/util/format';
+import { formatDateTime, formatLiters } from '@shared/util/format';
+import { labelForPlantStatus, toneForPlantStatus } from '@shared/util/status';
 
 /** Módulo Plantas — red de 16 plantas (§9). */
 @Component({
@@ -25,7 +21,7 @@ export class Plants {
   protected readonly formatLiters = formatLiters;
   protected readonly formatDateTime = formatDateTime;
   protected readonly labelForPlantStatus = labelForPlantStatus;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly toneForPlantStatus = toneForPlantStatus;
 
   protected plantAlerts(plantId: string): number {
     return this.store.alertsOfPlant(plantId).filter((alert) => alert.status !== 'Atendida').length;

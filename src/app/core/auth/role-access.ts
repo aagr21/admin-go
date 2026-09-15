@@ -10,6 +10,9 @@ export const ROLE_MODULES: Record<UserRole, readonly string[]> = {
   'Superadministrador AdminGo': [
     'dashboard',
     'operations',
+    'controls',
+    'compliance',
+    'users',
     'plants',
     'stations',
     'tanks',
@@ -30,16 +33,28 @@ export const ROLE_MODULES: Record<UserRole, readonly string[]> = {
     'operations',
     'documents',
     'declarations',
+    'compliance',
     'reports',
     'companies',
+    'users',
   ],
   // Indicadores, alertas, inventarios, operaciones y reportes.
-  Gerente: ['dashboard', 'operations', 'plants', 'tanks', 'volumes', 'alerts', 'reports'],
+  Gerente: [
+    'dashboard',
+    'operations',
+    'controls',
+    'plants',
+    'tanks',
+    'volumes',
+    'alerts',
+    'reports',
+  ],
   // Documentos, requisitos, declaraciones y validaciones.
   'Responsable regulatorio': [
     'dashboard',
     'documents',
     'declarations',
+    'compliance',
     'quality',
     'alerts',
     'settings',
@@ -48,19 +63,22 @@ export const ROLE_MODULES: Record<UserRole, readonly string[]> = {
   'Supervisor operativo AdminGo': [
     'dashboard',
     'operations',
+    'controls',
     'plants',
     'cisterns',
     'volumes',
     'alerts',
   ],
   // Registra recepciones, despachos, mediciones, precintos y evidencias.
-  'Operador de campo': ['dashboard', 'operations', 'volumes', 'tanks', 'cisterns'],
+  'Operador de campo': ['dashboard', 'operations', 'controls', 'volumes', 'tanks', 'cisterns'],
   // Gestiona su estación y tanques.
   'Responsable EESS': ['dashboard', 'stations', 'tanks', 'volumes'],
   // Consulta y auditoría sin modificar datos.
   Auditor: [
     'dashboard',
     'audit',
+    'controls',
+    'compliance',
     'reports',
     'documents',
     'declarations',

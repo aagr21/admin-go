@@ -3,7 +3,12 @@ import { RouterLink } from '@angular/router';
 import { ALERT_SEVERITIES, ALERT_STATUSES, ALERT_TYPES } from '@core/models/enums';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import { formatDateTime, labelForSeverity, toneForStatus } from '@shared/util/format';
+import { formatDateTime } from '@shared/util/format';
+import {
+  labelForAlertSeverity,
+  toneForAlertSeverity,
+  toneForAlertStatus,
+} from '@shared/util/status';
 
 /** Módulo Alertas — eventos documentales, operativos y volumétricos (§25). */
 @Component({
@@ -45,8 +50,9 @@ export class AlertsPage {
   );
 
   protected readonly formatDateTime = formatDateTime;
-  protected readonly labelForSeverity = labelForSeverity;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly labelForAlertSeverity = labelForAlertSeverity;
+  protected readonly toneForAlertSeverity = toneForAlertSeverity;
+  protected readonly toneForAlertStatus = toneForAlertStatus;
 
   protected plantName(plantId: string | null): string {
     return this.store.plantById(plantId)?.code ?? '—';

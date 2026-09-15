@@ -91,7 +91,6 @@ export class ReportExportService {
     const excelModule = await import('exceljs');
     const workbook = new excelModule.Workbook();
     const sheet = workbook.addWorksheet(report.title.slice(0, 28));
-    const columnCount = Math.max(report.columns.length, 1);
 
     sheet.getRow(1).getCell(1).value = report.title;
     sheet.getRow(1).getCell(1).font = { bold: true, size: 14, color: { argb: 'FF0D3C61' } };

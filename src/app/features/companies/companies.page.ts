@@ -18,7 +18,7 @@ import { StatusBadge } from '@shared/ui/status-badge';
         </div>
       </header>
       <article class="ag-card ag-card--flush">
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Empresa</th>
@@ -31,15 +31,15 @@ import { StatusBadge } from '@shared/ui/status-badge';
           <tbody>
             @for (company of companies(); track company.id) {
               <tr>
-                <td>{{ company.name }}</td>
-                <td class="ag-mono">{{ company.nit }}</td>
-                <td>{{ company.kind }}</td>
-                <td>
+                <td data-label="Empresa">{{ company.name }}</td>
+                <td data-label="NIT" class="ag-mono">{{ company.nit }}</td>
+                <td data-label="Tipo">{{ company.kind }}</td>
+                <td data-label="Contacto">
                   {{ company.contactName }}
                   <br />
                   <span class="ag-muted">{{ company.contactEmail }}</span>
                 </td>
-                <td>
+                <td data-label="Estado">
                   <app-status-badge
                     [label]="company.active ? 'Activa' : 'Inactiva'"
                     [tone]="company.active ? 'ok' : 'neutral'"

@@ -83,3 +83,14 @@ export type DeclarationStatus = (typeof DECLARATION_STATUSES)[number];
 /* ── Controles operativos de campo (§10) ───────────────────────────── */
 export const CONTROL_STATUSES = ['Programado', 'En ejecución', 'Cerrado', 'Escalado'] as const;
 export type ControlStatus = (typeof CONTROL_STATUSES)[number];
+
+export const CONTROL_SHIFTS = ['Mañana', 'Tarde', 'Noche'] as const;
+export type ControlShift = (typeof CONTROL_SHIFTS)[number];
+
+/* ── Cisternas (§19) ───────────────────────────────────────────────── */
+export const CISTERN_STATUSES = ['Disponible', 'En ruta', 'En planta', 'Mantenimiento'] as const;
+export type CisternStatus = (typeof CISTERN_STATUSES)[number];
+
+/* ── Incidencias (§25) ─────────────────────────────────────────────── */
+export const INCIDENT_STATUSES = ['Abierta', 'En revisión', 'Cerrada'] as const;
+export type IncidentStatus = (typeof INCIDENT_STATUSES)[number];

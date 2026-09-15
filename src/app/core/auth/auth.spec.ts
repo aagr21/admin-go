@@ -69,8 +69,8 @@ describe('AuthStore', () => {
 });
 
 describe('Matriz de roles (§6)', () => {
-  it('el Superadministrador accede a los 15 módulos', () => {
-    expect(modulesForRole('Superadministrador AdminGo').length).toBe(15);
+  it('el Superadministrador accede a los 18 módulos', () => {
+    expect(modulesForRole('Superadministrador AdminGo').length).toBe(18);
     expect(canAccessModule('Superadministrador AdminGo', '/settings')).toBe(true);
   });
 

@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AdminGoStore } from '@core/services/admin-go.store';
 import { StatusBadge } from '@shared/ui/status-badge';
-import { formatDateTime, toneForStatus } from '@shared/util/format';
+import { formatDateTime } from '@shared/util/format';
+import { toneForQualityStatus } from '@shared/util/status';
 
 /** Módulo Producto y calidad — controles, certificados, muestras y resultados (§22). */
 @Component({
@@ -19,7 +20,7 @@ import { formatDateTime, toneForStatus } from '@shared/util/format';
         </div>
       </header>
       <article class="ag-card ag-card--flush">
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Control</th>
@@ -35,21 +36,21 @@ import { formatDateTime, toneForStatus } from '@shared/util/format';
           <tbody>
             @for (control of controls(); track control.id) {
               <tr>
-                <td class="ag-mono">{{ control.code }}</td>
-                <td>
+                <td data-label="Control" class="ag-mono">{{ control.code }}</td>
+                <td data-label="Producto / Lote">
                   {{ control.product }}
                   <br />
                   <span class="ag-muted ag-mono">{{ control.lot }}</span>
                 </td>
-                <td>{{ plantName(control.plantId) }}</td>
-                <td>{{ control.controlType }}</td>
-                <td>{{ control.result }}</td>
-                <td class="ag-mono">{{ control.certificate ?? '—' }}</td>
-                <td>{{ formatDateTime(control.controlledAt) }}</td>
-                <td>
+                <td data-label="Planta">{{ plantName(control.plantId) }}</td>
+                <td data-label="Tipo de control">{{ control.controlType }}</td>
+                <td data-label="Resultado">{{ control.result }}</td>
+                <td data-label="Certificado" class="ag-mono">{{ control.certificate ?? '—' }}</td>
+                <td data-label="Fecha">{{ formatDateTime(control.controlledAt) }}</td>
+                <td data-label="Estado">
                   <app-status-badge
                     [label]="control.status"
-                    [tone]="toneForStatus(control.status)"
+                    [tone]="toneForQualityStatus(control.status)"
                   />
                 </td>
               </tr>
@@ -64,7 +65,7 @@ export class QualityPage {
   private readonly store = inject(AdminGoStore);
   protected readonly controls = this.store.qualityControls;
   protected readonly formatDateTime = formatDateTime;
-  protected readonly toneForStatus = toneForStatus;
+  protected readonly toneForQualityStatus = toneForQualityStatus;
 
   protected plantName(plantId: string): string {
     return this.store.plantById(plantId)?.name ?? '—';

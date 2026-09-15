@@ -9,7 +9,7 @@
       <div class="ag-row">
         <app-status-badge
           [label]="labelForPlantStatus(p.status)"
-          [tone]="toneForStatus(p.status)"
+          [tone]="toneForPlantStatus(p.status)"
         />
         <span class="ag-muted">AdminScore {{ p.adminScore }}</span>
       </div>
@@ -66,7 +66,7 @@
         <header class="ag-card__head card-pad">
           <p class="ag-card__title">Operaciones ({{ operations().length }})</p>
         </header>
-        <table class="ag-table">
+        <table class="ag-table ag-table--stack">
           <thead>
             <tr>
               <th>Identificador</th>
@@ -78,17 +78,19 @@
           <tbody>
             @for (operation of operations(); track operation.id) {
               <tr>
-                <td>
+                <td data-label="Identificador">
                   <a class="link ag-mono" [routerLink]="['/operations', operation.code]">{{
                     operation.code
                   }}</a>
                 </td>
-                <td>{{ operation.type }}</td>
-                <td class="ag-num">{{ formatLiters(operation.documentedVolume) }}</td>
-                <td>
+                <td data-label="Tipo">{{ operation.type }}</td>
+                <td data-label="Documentado" class="ag-num">
+                  {{ formatLiters(operation.documentedVolume) }}
+                </td>
+                <td data-label="Estado">
                   <app-status-badge
                     [label]="operation.status"
-                    [tone]="toneForStatus(operation.status)"
+                    [tone]="toneForOperationStatus(operation.status)"
                   />
                 </td>
               </tr>
@@ -109,7 +111,10 @@
           <ul class="list">
             @for (alert of alerts(); track alert.id) {
               <li class="list__item">
-                <app-status-badge [label]="alert.type" [tone]="toneForStatus(alert.severity)" />
+                <app-status-badge
+                  [label]="alert.type"
+                  [tone]="toneForAlertSeverity(alert.severity)"
+                />
                 <p>{{ alert.message }}</p>
               </li>
             } @empty {
@@ -128,7 +133,7 @@
                 <div class="ag-row">
                   <app-status-badge
                     [label]="control.status"
-                    [tone]="toneForStatus(control.status)"
+                    [tone]="toneForControlStatus(control.status)"
                   />
                   <span class="ag-muted">{{ control.controlDate }} · {{ control.shift }}</span>
                 </div>

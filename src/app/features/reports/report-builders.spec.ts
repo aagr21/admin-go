@@ -54,13 +54,25 @@ function documentFixture(
     name: 'Permiso operativo',
     category: 'instalación',
     companyId: 'c1',
+    stationId: null,
     operationId: null,
     issuedAt: '2026-01-10',
     expiresAt,
     status: 'Vigente',
     responsible: 'Cliente',
-    version: 1,
+    versions: [
+      {
+        version: 1,
+        uploadedAt: '2026-01-10T09:00:00',
+        uploadedBy: 'Cliente',
+        fileName: 'permiso-operativo-v1.pdf',
+        mimeType: 'application/pdf',
+        sizeBytes: 120_000,
+        note: null,
+      },
+    ],
     observation: null,
+    evidenceIds: [],
     ...overrides,
   };
 }

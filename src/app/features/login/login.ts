@@ -1,22 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthStore, DEMO_PASSWORD } from '@core/auth/auth.store';
+import { USERS } from '@core/data/mock-data';
 
-interface DemoUser {
-  username: string;
-  role: string;
-}
-
-const DEMO_USERS: DemoUser[] = [
-  { username: 'admin', role: 'Superadministrador AdminGo' },
-  { username: 'mrojas', role: 'Administrador cliente' },
-  { username: 'gerente.andina', role: 'Gerente' },
-  { username: 'regulatorio.andina', role: 'Responsable regulatorio' },
-  { username: 'sup.campo01', role: 'Supervisor operativo AdminGo' },
-  { username: 'operador01', role: 'Operador de campo' },
-  { username: 'eess.central', role: 'Responsable EESS' },
-  { username: 'auditor.01', role: 'Auditor' },
-];
+/**
+ * Accesos de demostración derivados del propio dataset: mantener una lista
+ * paralela garantizaba que antes o después divergiera de `USERS`.
+ */
+const DEMO_USERS = USERS.filter((user) => user.active).map(({ username, role }) => ({
+  username,
+  role,
+}));
 
 /**
  * Pantalla de acceso (P1 §33): valida credenciales contra el dataset demo y

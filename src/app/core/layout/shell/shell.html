@@ -1,21 +1,26 @@
-<div class="shell" [class.shell--collapsed]="collapsed()">
-  <aside class="sidebar">
+<div class="shell" [class.shell--collapsed]="collapsed()" [class.shell--nav-open]="mobileNavOpen()">
+  @if (mobileNavOpen()) {
+    <button
+      class="backdrop"
+      type="button"
+      (click)="closeMobileNav()"
+      aria-label="Cerrar menú de módulos"
+    ></button>
+  }
+
+  <aside class="sidebar" id="ag-sidebar">
     <div class="brand">
       <span class="brand__mark">AG</span>
-      @if (!collapsed()) {
-        <span class="brand__text">
-          <strong>AdminGo</strong>
-          <small>Control Tower</small>
-        </span>
-      }
+      <span class="brand__text">
+        <strong>AdminGo</strong>
+        <small>Control Tower</small>
+      </span>
     </div>
 
     <nav class="nav" aria-label="Módulos del sistema">
       @for (group of navGroups(); track group.label) {
         <div class="nav__group">
-          @if (!collapsed()) {
-            <p class="nav__label">{{ group.label }}</p>
-          }
+          <p class="nav__label">{{ group.label }}</p>
           @for (item of group.items; track item.path) {
             <a
               class="nav__link"
@@ -27,9 +32,7 @@
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                 <path [attr.d]="item.icon" />
               </svg>
-              @if (!collapsed()) {
-                <span>{{ item.label }}</span>
-              }
+              <span>{{ item.label }}</span>
             </a>
           }
         </div>
@@ -37,10 +40,8 @@
     </nav>
 
     <div class="sidebar__foot">
-      @if (!collapsed()) {
-        <p class="sidebar__foot-title">ADMIN SCORE</p>
-        <p class="sidebar__foot-score">{{ kpis().adminScore }}<span>/100</span></p>
-      }
+      <p class="sidebar__foot-title">ADMIN SCORE</p>
+      <p class="sidebar__foot-score">{{ kpis().adminScore }}<span>/100</span></p>
     </div>
   </aside>
 
@@ -50,6 +51,8 @@
         class="topbar__toggle"
         type="button"
         (click)="toggleSidebar()"
+        [attr.aria-expanded]="mobileNavOpen()"
+        aria-controls="ag-sidebar"
         aria-label="Alternar menú lateral"
       >
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
@@ -75,8 +78,8 @@
       <div class="user">
         <span class="user__avatar">{{ initials() }}</span>
         <span class="user__meta">
-          <strong>{{ user().fullName }}</strong>
-          <small>{{ user().role }}</small>
+          <strong>{{ user()?.fullName ?? 'Sesión' }}</strong>
+          <small>{{ user()?.role ?? 'sin rol' }}</small>
         </span>
         <button
           class="user__logout"
@@ -95,6 +98,21 @@
     </header>
 
     <main class="content">
+      @if (busy()) {
+        <p class="content__busy" role="status" aria-live="polite">Guardando cambios…</p>
+      }
+      @if (error(); as message) {
+        <div class="content__error" role="alert">
+          <div>
+            <strong>No se pudo completar la operación</strong>
+            <p>{{ message }}</p>
+          </div>
+          <button class="ag-btn" type="button" (click)="dismissError()">Entendido</button>
+        </div>
+      }
+      @if (!ready()) {
+        <p class="content__busy" role="status">Cargando datos de la plataforma…</p>
+      }
       <router-outlet />
     </main>
   </div>
