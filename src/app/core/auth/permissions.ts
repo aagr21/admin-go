@@ -29,7 +29,7 @@ const READ_ONLY: readonly Action[] = ['read', 'export'];
 /** Capacidades de escritura por rol (§6). */
 export const ROLE_ACTIONS: Record<UserRole, readonly Action[]> = {
   // Configuración general, clientes, usuarios, permisos y parámetros.
-  'Superadministrador AdminGo': [
+  'Superadministrador TrazaFuel': [
     'read',
     'create',
     'update',
@@ -45,7 +45,7 @@ export const ROLE_ACTIONS: Record<UserRole, readonly Action[]> = {
   // Documentos, requisitos, declaraciones y validaciones.
   'Responsable regulatorio': ['read', 'create', 'update', 'export', 'validate'],
   // Coordina controles de campo y seguimiento.
-  'Supervisor operativo AdminGo': ['read', 'create', 'update', 'close', 'export'],
+  'Supervisor operativo TrazaFuel': ['read', 'create', 'update', 'close', 'export'],
   // Registra recepciones, despachos, mediciones, precintos y evidencias.
   'Operador de campo': ['read', 'create', 'update', 'close'],
   // Gestiona su estación y tanques.

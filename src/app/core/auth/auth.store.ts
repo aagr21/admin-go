@@ -9,7 +9,7 @@ import { USERS } from '../data/mock-data';
  */
 export const DEMO_PASSWORD = 'demo123';
 
-const SESSION_KEY = 'admingo.session';
+const SESSION_KEY = 'trazafuel.session';
 
 export interface LoginResult {
   ok: boolean;

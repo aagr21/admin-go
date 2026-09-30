@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { formatDateTime } from '@shared/util/format';
 
 /** Módulo Auditoría — historial de acciones críticas (§27). */
@@ -52,6 +52,6 @@ import { formatDateTime } from '@shared/util/format';
   `,
 })
 export class AuditPage {
-  protected readonly logs = inject(AdminGoStore).auditLogs;
+  protected readonly logs = inject(TrazaFuelStore).auditLogs;
   protected readonly formatDateTime = formatDateTime;
 }

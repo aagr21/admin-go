@@ -6,8 +6,8 @@ import {
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
-import { provideAdminGoApi } from '@core/api/api.provider';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { provideTrazaFuelApi } from '@core/api/api.provider';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -15,8 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     // Origen de datos (§29, §31): hoy en memoria, mañana HTTP.
-    provideAdminGoApi(),
+    provideTrazaFuelApi(),
     // Carga inicial antes de renderizar: la UI nunca ve una pantalla a medias.
-    provideAppInitializer(() => inject(AdminGoStore).load()),
+    provideAppInitializer(() => inject(TrazaFuelStore).load()),
   ],
 };

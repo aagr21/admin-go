@@ -1,19 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { provideAdminGoApi } from '@core/api/api.provider';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { provideTrazaFuelApi } from '@core/api/api.provider';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { App } from './app';
 import { routes } from './app.routes';
 
 /** Humo de enrutado: garantiza que la app renderiza contenido real (no página en blanco). */
 describe('App routing (con sesión de administrador)', () => {
   beforeEach(async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1'); // admin · Superadministrador
+    sessionStorage.setItem('trazafuel.session', 'usr-1'); // admin · Superadministrador
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter(routes), provideAdminGoApi()],
+      providers: [provideRouter(routes), provideTrazaFuelApi()],
     }).compileComponents();
-    await TestBed.inject(AdminGoStore).load();
+    await TestBed.inject(TrazaFuelStore).load();
   });
 
   it('redirige la raíz al dashboard y monta el Shell con la barra lateral', async () => {
@@ -70,9 +70,9 @@ describe('App routing sin sesión', () => {
     sessionStorage.clear();
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter(routes), provideAdminGoApi()],
+      providers: [provideRouter(routes), provideTrazaFuelApi()],
     }).compileComponents();
-    await TestBed.inject(AdminGoStore).load();
+    await TestBed.inject(TrazaFuelStore).load();
 
     const router = TestBed.inject(Router);
     const fixture = TestBed.createComponent(App);
@@ -89,12 +89,12 @@ describe('App routing sin sesión', () => {
 
 describe('App routing · módulos nuevos', () => {
   beforeEach(async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1'); // Superadministrador
+    sessionStorage.setItem('trazafuel.session', 'usr-1'); // Superadministrador
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter(routes), provideAdminGoApi()],
+      providers: [provideRouter(routes), provideTrazaFuelApi()],
     }).compileComponents();
-    await TestBed.inject(AdminGoStore).load();
+    await TestBed.inject(TrazaFuelStore).load();
   });
 
   const cases: { url: string; selector: string; text: string }[] = [

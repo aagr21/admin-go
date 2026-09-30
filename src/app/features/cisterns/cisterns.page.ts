@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatLiters } from '@shared/util/format';
 import { toneForCisternStatus, toneForDocumentStatus } from '@shared/util/status';
@@ -77,7 +77,7 @@ import { toneForCisternStatus, toneForDocumentStatus } from '@shared/util/status
   `,
 })
 export class CisternsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   protected readonly cisterns = this.store.cisterns;
   protected readonly formatLiters = formatLiters;
   protected readonly toneForCisternStatus = toneForCisternStatus;

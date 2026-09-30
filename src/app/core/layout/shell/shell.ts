@@ -6,7 +6,7 @@ import { AuthStore } from '@core/auth/auth.store';
 import { filterNavGroups } from '@core/auth/role-access';
 import { DATASET_LAST_SYNC_ISO } from '@core/data/dataset-date';
 import { NAV_GROUPS } from '@core/layout/navigation';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { formatDateTime } from '@shared/util/format';
 
 /** Ancho a partir del cual la barra lateral pasa a ser un cajón superpuesto. */
@@ -24,7 +24,7 @@ export class Shell {
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
 
-  protected readonly store = inject(AdminGoStore);
+  protected readonly store = inject(TrazaFuelStore);
   /** Escritorio: rail de iconos. Móvil: cajón abierto o cerrado. */
   protected readonly collapsed = signal(false);
   protected readonly mobileNavOpen = signal(false);

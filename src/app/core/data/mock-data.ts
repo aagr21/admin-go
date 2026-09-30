@@ -22,14 +22,14 @@ const pad = (n: number, size = 2): string => String(n).padStart(size, '0');
 
 /* ── Empresas (§7) ───────────────────────────────────────────────── */
 export const COMPANIES: Company[] = [
-  // AdminGo es también una empresa: su personal pertenece a ella (§6).
+  // TrazaFuel es también una empresa: su personal pertenece a ella (§6).
   {
     id: 'cmp-0',
-    name: 'AdminGo',
+    name: 'TrazaFuel',
     nit: '1023456000',
     kind: 'Operador',
     contactName: 'Arnol Guevara',
-    contactEmail: 'admin@admingo.bo',
+    contactEmail: 'admin@trazafuel.bo',
     active: true,
   },
   {
@@ -283,11 +283,11 @@ export const REQUIREMENTS: Requirement[] = REQUIREMENT_SEEDS.map(
 type UserSeed = [username: string, fullName: string, role: User['role'], companyId: string];
 
 const USER_SEEDS: UserSeed[] = [
-  ['admin', 'Arnol Guevara', 'Superadministrador AdminGo', 'cmp-0'],
+  ['admin', 'Arnol Guevara', 'Superadministrador TrazaFuel', 'cmp-0'],
   ['mrojas', 'Marcela Rojas', 'Administrador cliente', 'cmp-1'],
   ['gerente.andina', 'Verónica Paz', 'Gerente', 'cmp-1'],
   ['regulatorio.andina', 'Iván Terceros', 'Responsable regulatorio', 'cmp-1'],
-  ['sup.campo01', 'Ramiro Loza', 'Supervisor operativo AdminGo', 'cmp-0'],
+  ['sup.campo01', 'Ramiro Loza', 'Supervisor operativo TrazaFuel', 'cmp-0'],
   ['operador01', 'Nicolás Vargas', 'Operador de campo', 'cmp-0'],
   ['eess.central', 'Ana Villarroel', 'Responsable EESS', 'cmp-3'],
   ['auditor.01', 'Silvia Camacho', 'Auditor', 'cmp-1'],
@@ -297,7 +297,7 @@ export const USERS: User[] = USER_SEEDS.map(([username, fullName, role, companyI
   id: `usr-${i + 1}`,
   username,
   fullName,
-  email: `${username}@admingo.bo`,
+  email: `${username}@trazafuel.bo`,
   role,
   companyId,
   active: true,
@@ -500,7 +500,7 @@ export const OPERATIONS: Operation[] = OPERATION_SEEDS.map((seed, i) => {
   const day = pad(8 + (i % 8));
   return {
     id: `opn-${seq}`,
-    code: `AG-DI-2026-${String(seq).padStart(6, '0')}`,
+    code: `TF-DI-2026-${String(seq).padStart(6, '0')}`,
     type: ops[0],
     status: ops[1],
     product: ops[2],
@@ -556,7 +556,7 @@ const DOCUMENT_SEEDS: DocumentSeed[] = [
     '2026-10-05',
     'Próximo a vencer',
   ],
-  ['Guía de tránsito AG-DI-000002', 'Operativo', 'cmp-1', 1, '2026-09-09', null, 'Vigente'],
+  ['Guía de tránsito TF-DI-000002', 'Operativo', 'cmp-1', 1, '2026-09-09', null, 'Vigente'],
   [
     'Póliza de seguro CIS-1123-ABC',
     'Vehículo',
@@ -595,7 +595,7 @@ const DOCUMENT_SEEDS: DocumentSeed[] = [
     '2027-09-11',
     'Vigente',
   ],
-  ['Manifiesto de carga AG-DI-000005', 'Operativo', 'cmp-2', 4, '2026-09-12', null, 'Observado'],
+  ['Manifiesto de carga TF-DI-000005', 'Operativo', 'cmp-2', 4, '2026-09-12', null, 'Observado'],
   ['Autorización EESS-005', 'Regulatorio', 'cmp-4', -1, '2024-08-01', '2026-08-01', 'Vencido', 4],
   [
     'Certificado ambiental planta TDD',

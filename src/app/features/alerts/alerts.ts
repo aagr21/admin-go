@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ALERT_SEVERITIES, ALERT_STATUSES, ALERT_TYPES } from '@core/models/enums';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime } from '@shared/util/format';
 import {
@@ -19,7 +19,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   protected readonly severities = ALERT_SEVERITIES;
   protected readonly statuses = ALERT_STATUSES;

@@ -70,8 +70,8 @@ describe('AuthStore', () => {
 
 describe('Matriz de roles (§6)', () => {
   it('el Superadministrador accede a los 18 módulos', () => {
-    expect(modulesForRole('Superadministrador AdminGo').length).toBe(18);
-    expect(canAccessModule('Superadministrador AdminGo', '/settings')).toBe(true);
+    expect(modulesForRole('Superadministrador TrazaFuel').length).toBe(18);
+    expect(canAccessModule('Superadministrador TrazaFuel', '/settings')).toBe(true);
   });
 
   it('el Auditor consulta pero no opera', () => {
@@ -85,8 +85,8 @@ describe('Matriz de roles (§6)', () => {
   });
 
   it('las rutas de detalle heredan el permiso del módulo', () => {
-    expect(canAccessModule('Gerente', '/operations/AG-DI-2026-000001')).toBe(true);
-    expect(canAccessModule('Auditor', '/operations/AG-DI-2026-000001')).toBe(false);
+    expect(canAccessModule('Gerente', '/operations/TF-DI-2026-000001')).toBe(true);
+    expect(canAccessModule('Auditor', '/operations/TF-DI-2026-000001')).toBe(false);
   });
 
   it('sin rol no hay acceso ni menú', () => {
@@ -121,7 +121,7 @@ describe('Guards', () => {
   });
 
   it('moduleGuard deja pasar al rol autorizado', () => {
-    sessionStorage.setItem('admingo.session', 'usr-1'); // Superadministrador
+    sessionStorage.setItem('trazafuel.session', 'usr-1'); // Superadministrador
     TestBed.inject(AuthStore); // rehidrata la sesión antes del guard
 
     const result = TestBed.runInInjectionContext(() =>
@@ -131,7 +131,7 @@ describe('Guards', () => {
   });
 
   it('moduleGuard desvía al dashboard al rol no autorizado', () => {
-    sessionStorage.setItem('admingo.session', 'usr-8'); // Auditor
+    sessionStorage.setItem('trazafuel.session', 'usr-8'); // Auditor
     TestBed.inject(AuthStore);
 
     const result = TestBed.runInInjectionContext(() =>

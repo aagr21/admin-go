@@ -3,7 +3,7 @@ import { authGuard, moduleGuard } from '@core/auth/auth.guard';
 import { Shell } from '@core/layout/shell/shell';
 
 /**
- * Rutas de AdminGo: `Shell` es el layout raíz (barra lateral §7) y cada módulo
+ * Rutas de TrazaFuel: `Shell` es el layout raíz (barra lateral §7) y cada módulo
  * se carga de forma diferida como hijo suyo. El acceso exige sesión activa
  * (`authGuard`, P1 §33) y permisos por rol según la matriz §6 (`moduleGuard`).
  * Los parámetros de las rutas de detalle (`plants/:id`, `operations/:code`) se

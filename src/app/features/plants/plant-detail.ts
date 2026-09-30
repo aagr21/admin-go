@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime, formatLiters } from '@shared/util/format';
 import {
@@ -20,7 +20,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlantDetail {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   /** Id de planta recibido desde la ruta (withComponentInputBinding). */
   readonly id = input.required<string>();

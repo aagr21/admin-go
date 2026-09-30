@@ -24,18 +24,18 @@ import {
 import { AlertStatus } from '@core/models/enums';
 
 /**
- * Contrato de datos de AdminGo (§29 «API frontend/backend», §31 «DISEÑAR API
+ * Contrato de datos de TrazaFuel (§29 «API frontend/backend», §31 «DISEÑAR API
  * DESDE EL INICIO»).
  *
  * Es la frontera única entre la interfaz y el origen de datos. Hoy la
- * implementación es `InMemoryAdminGoApi` (dataset de demostración); cuando
- * exista backend se añade `HttpAdminGoApi` sobre `HttpClient` y se cambia un
+ * implementación es `InMemoryTrazaFuelApi` (dataset de demostración); cuando
+ * exista backend se añade `HttpTrazaFuelApi` sobre `HttpClient` y se cambia un
  * único provider sin tocar ninguna pantalla. Cada método documenta el verbo y
  * la ruta que le corresponderán.
  */
 
 /** Estado completo que la aplicación carga al arrancar. */
-export interface AdminGoDataset {
+export interface TrazaFuelDataset {
   companies: Company[];
   products: Product[];
   plants: Plant[];
@@ -177,19 +177,19 @@ export interface EvidenceDraft {
 }
 
 /** Error de la capa de datos, tipificado para que la UI decida qué mostrar. */
-export class AdminGoApiError extends Error {
+export class TrazaFuelApiError extends Error {
   constructor(
     readonly code: 'not-found' | 'invalid',
     message: string,
   ) {
     super(message);
-    this.name = 'AdminGoApiError';
+    this.name = 'TrazaFuelApiError';
   }
 }
 
-export abstract class AdminGoApi {
+export abstract class TrazaFuelApi {
   /** GET /bootstrap — carga inicial de todas las colecciones. */
-  abstract bootstrap(config: RuleConfig): Promise<AdminGoDataset>;
+  abstract bootstrap(config: RuleConfig): Promise<TrazaFuelDataset>;
 
   /** POST /operations */
   abstract createOperation(draft: OperationDraft): Promise<Operation>;

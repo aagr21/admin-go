@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Tank } from '@core/models/entities';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime, formatLiters } from '@shared/util/format';
 import {
@@ -72,7 +72,7 @@ import {
   `,
 })
 export class TanksPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   protected readonly tanks = this.store.tanks;
   protected readonly formatLiters = formatLiters;
   protected readonly formatDateTime = formatDateTime;

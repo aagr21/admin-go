@@ -140,7 +140,7 @@ export const OPERATIONAL_CONTROLS: OperationalControl[] = CONTROL_SEEDS.map(
 export const AUDIT_LOGS: AuditLog[] = [
   [
     'operador01',
-    'AG-DI-2026-000148',
+    'TF-DI-2026-000148',
     'Volumen recibido',
     '34.800 L',
     '34.850 L',
@@ -148,13 +148,13 @@ export const AUDIT_LOGS: AuditLog[] = [
   ],
   [
     'operador01',
-    'AG-DI-2026-000149',
+    'TF-DI-2026-000149',
     'Volumen despachado',
     '28.000 L',
     '28.000 L',
     'Registro inicial',
   ],
-  ['sup.campo01', 'AG-DI-2026-000148', 'Estado', 'En tránsito', 'Recibida', 'Cambio de estado'],
+  ['sup.campo01', 'TF-DI-2026-000148', 'Estado', 'En tránsito', 'Recibida', 'Cambio de estado'],
   [
     'regulatorio.andina',
     'DEC-AND-2026-08',
@@ -169,13 +169,13 @@ export const AUDIT_LOGS: AuditLog[] = [
     'usr-6',
     'Rol',
     'Operador de campo',
-    'Supervisor operativo AdminGo',
+    'Supervisor operativo TrazaFuel',
     'Cambio de privilegio',
   ],
   ['mrojas', 'doc-2', 'Versión', '1', '2', 'Nueva versión documental'],
   [
     'auditor.01',
-    'AG-DI-2026-000151',
+    'TF-DI-2026-000151',
     'Observación',
     '—',
     'Diferencia volumétrica',

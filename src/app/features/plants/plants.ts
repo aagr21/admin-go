@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime, formatLiters } from '@shared/util/format';
 import { labelForPlantStatus, toneForPlantStatus } from '@shared/util/status';
@@ -14,7 +14,7 @@ import { labelForPlantStatus, toneForPlantStatus } from '@shared/util/status';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Plants {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   protected readonly plants = this.store.plantsBySeverity;
   protected readonly kpis = this.store.kpis;

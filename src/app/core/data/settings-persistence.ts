@@ -1,4 +1,4 @@
-import { RuleConfig } from '@core/api/admin-go.api';
+import { RuleConfig } from '@core/api/traza-fuel.api';
 
 /**
  * Persistencia local de los parámetros configurables (§14).
@@ -9,7 +9,7 @@ import { RuleConfig } from '@core/api/admin-go.api';
  * los valores por defecto.
  */
 
-const SETTINGS_KEY = 'admingo.settings';
+const SETTINGS_KEY = 'trazafuel.settings';
 
 export const DEFAULT_RULE_CONFIG: RuleConfig = {
   warningDays: 30,

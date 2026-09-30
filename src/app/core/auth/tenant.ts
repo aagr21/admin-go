@@ -4,7 +4,7 @@ import { UserRole } from '@core/models/enums';
 /**
  * Ámbito de visibilidad por empresa (§29 «Arquitectura multiempresa»).
  *
- * Los dos roles de AdminGo miran la red nacional completa; el resto de roles
+ * Los dos roles de TrazaFuel miran la red nacional completa; el resto de roles
  * son personal del cliente y solo deben ver datos de su propia empresa.
  *
  * **Aviso:** esto es una salvaguarda de interfaz, no seguridad. El aislamiento
@@ -14,8 +14,8 @@ import { UserRole } from '@core/models/enums';
 
 /** Roles con visión de toda la red. */
 export const CROSS_COMPANY_ROLES: readonly UserRole[] = [
-  'Superadministrador AdminGo',
-  'Supervisor operativo AdminGo',
+  'Superadministrador TrazaFuel',
+  'Supervisor operativo TrazaFuel',
 ];
 
 export interface TenantScope {

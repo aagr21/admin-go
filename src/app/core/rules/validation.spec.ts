@@ -41,7 +41,7 @@ function declarationFixture(overrides: Partial<Declaration> = {}): Declaration {
 function operationFixture(overrides: Partial<Operation> = {}): Operation {
   return {
     id: 'op-1',
-    code: 'AG-DI-2026-000001',
+    code: 'TF-DI-2026-000001',
     type: 'Recepción',
     status: 'Cerrada',
     product: 'Diésel Importado',
@@ -194,7 +194,7 @@ describe('validateDeclaration — CHECK ADMIN GO (§18)', () => {
       allOperations: [operationFixture(), operationFixture({ id: 'op-2' })],
     });
     expect(findings.find((item) => item.code === 'duplicados')?.entityRefs).toContain(
-      'AG-DI-2026-000001',
+      'TF-DI-2026-000001',
     );
   });
 

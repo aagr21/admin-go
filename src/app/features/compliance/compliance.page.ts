@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { Requirement } from '@core/models/entities';
 import { CoverageCell, CoverageStatus, buildComplianceMatrix } from '@core/rules/compliance-matrix';
 import { StatusBadge } from '@shared/ui/status-badge';
@@ -232,7 +232,7 @@ import { toneForDocumentStatus } from '@shared/util/status';
   `,
 })
 export class CompliancePage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   private readonly forms = inject(FormBuilder);
 
   protected readonly scopes: Requirement['appliesTo'][] = [

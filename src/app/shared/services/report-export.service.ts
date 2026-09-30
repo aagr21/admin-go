@@ -54,7 +54,7 @@ export class ReportExportService {
       doc.text(report.title, 28, 26);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
-      doc.text(`AdminGo · ${report.section} · ${report.subtitle}`, 28, 44);
+      doc.text(`TrazaFuel · ${report.section} · ${report.subtitle}`, 28, 44);
       doc.setTextColor(120, 130, 140);
       doc.setFontSize(7.5);
       doc.text(`Generado el ${stamp}`, 28, height - 16);
@@ -94,7 +94,7 @@ export class ReportExportService {
 
     sheet.getRow(1).getCell(1).value = report.title;
     sheet.getRow(1).getCell(1).font = { bold: true, size: 14, color: { argb: 'FF0D3C61' } };
-    sheet.getRow(2).getCell(1).value = `AdminGo · ${report.section} · ${report.subtitle}`;
+    sheet.getRow(2).getCell(1).value = `TrazaFuel · ${report.section} · ${report.subtitle}`;
     sheet.getRow(2).getCell(1).font = { size: 9, color: { argb: 'FF64748B' } };
 
     const headerRow = sheet.getRow(4);
@@ -138,10 +138,10 @@ export class ReportExportService {
     this.saveBlob(blob, this.fileName(report, 'xlsx'));
   }
 
-  /** Nombre de archivo: AG-<slug>-<fecha>.<ext> (fecha real de generación). */
+  /** Nombre de archivo: TF-<slug>-<fecha>.<ext> (fecha real de generación). */
   fileName(report: ReportData, ext: 'pdf' | 'xlsx'): string {
     const date = new Date().toISOString().slice(0, 10);
-    return `AG-${report.slug}-${date}.${ext}`;
+    return `TF-${report.slug}-${date}.${ext}`;
   }
 
   private stamp(): string {

@@ -1,6 +1,6 @@
 /**
- * Catálogos de estados, roles y clasificaciones de AdminGo.
- * Basado en el Documento de Requerimientos AdminGo v1.0 (§6, §15, §25, §29).
+ * Catálogos de estados, roles y clasificaciones de TrazaFuel.
+ * Basado en el Documento de Requerimientos TrazaFuel v1.0 (§6, §15, §25, §29).
  *
  * Se usan `as const` + union types en lugar de enums para mantener
  * tree-shaking y compatibilidad con `isolatedModules`.
@@ -16,11 +16,11 @@ export type ComplianceLevel = (typeof COMPLIANCE_LEVELS)[number];
 
 /* ── Usuarios y roles (§6) ─────────────────────────────────────────── */
 export const USER_ROLES = [
-  'Superadministrador AdminGo',
+  'Superadministrador TrazaFuel',
   'Administrador cliente',
   'Gerente',
   'Responsable regulatorio',
-  'Supervisor operativo AdminGo',
+  'Supervisor operativo TrazaFuel',
   'Operador de campo',
   'Responsable EESS',
   'Auditor',

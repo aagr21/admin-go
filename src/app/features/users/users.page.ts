@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { writableActions } from '@core/auth/permissions';
 import { modulesForRole } from '@core/auth/role-access';
 import { User } from '@core/models/entities';
@@ -257,7 +257,7 @@ import { StatusBadge } from '@shared/ui/status-badge';
   `,
 })
 export class UsersPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   private readonly forms = inject(FormBuilder);
 
   protected readonly roles = USER_ROLES;

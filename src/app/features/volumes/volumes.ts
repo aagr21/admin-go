@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Volume } from '@core/models/entities';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { formatDateTime, formatLiters, Tone } from '@shared/util/format';
 import { toneForVolumeDifference } from '@shared/util/status';
 
@@ -227,7 +227,7 @@ import { toneForVolumeDifference } from '@shared/util/status';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VolumesPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   protected readonly kpis = this.store.kpis;
   protected readonly volumes = this.store.volumes;

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime, formatLiters } from '@shared/util/format';
 import {
@@ -24,7 +24,7 @@ interface PassportStage {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperationPassport {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   /** Código de operación recibido desde la ruta (withComponentInputBinding). */
   readonly code = input.required<string>();

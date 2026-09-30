@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "admin-go": {
+    "traza-fuel": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -63,10 +63,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "admin-go:build:production"
+              "buildTarget": "traza-fuel:build:production"
             },
             "development": {
-              "buildTarget": "admin-go:build:development"
+              "buildTarget": "traza-fuel:build:development"
             }
           },
           "defaultConfiguration": "development"

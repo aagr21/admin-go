@@ -48,9 +48,9 @@ import {
 } from '@core/data/mock-data';
 import { deriveAlerts } from '@core/rules/alert-rules';
 import {
-  AdminGoApi,
-  AdminGoApiError,
-  AdminGoDataset,
+  TrazaFuelApi,
+  TrazaFuelApiError,
+  TrazaFuelDataset,
   AuditDraft,
   ControlClosureDraft,
   ControlDraft,
@@ -61,7 +61,7 @@ import {
   RequirementDraft,
   RuleConfig,
   UserDraft,
-} from './admin-go.api';
+} from './traza-fuel.api';
 
 const OPERATION_CODE_PREFIX: Record<Operation['type'], string> = {
   Recepción: 'RC',
@@ -77,10 +77,10 @@ const OPERATION_CODE_PREFIX: Record<Operation['type'], string> = {
  * Hace las veces de servidor: es el único punto que muta el estado, genera
  * identificadores y marcas de tiempo, y recalcula las alertas derivadas. Las
  * pantallas nunca tocan `mock-data` directamente, así que sustituir esto por
- * `HttpAdminGoApi` no obliga a cambiarlas.
+ * `HttpTrazaFuelApi` no obliga a cambiarlas.
  */
 @Injectable()
-export class InMemoryAdminGoApi extends AdminGoApi {
+export class InMemoryTrazaFuelApi extends TrazaFuelApi {
   private companies: Company[] = clone(COMPANIES);
   private products: Product[] = clone(PRODUCTS);
   private plants: Plant[] = clone(PLANTS);
@@ -107,7 +107,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
   private clockOffsetSeconds = 0;
   private sequence = 0;
 
-  async bootstrap(config: RuleConfig): Promise<AdminGoDataset> {
+  async bootstrap(config: RuleConfig): Promise<TrazaFuelDataset> {
     this.alerts = this.reconcileAlerts(config);
     return this.snapshot();
   }
@@ -251,7 +251,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
   async openControl(id: string, arrivedAt: string): Promise<OperationalControl> {
     const current = this.requireEntity(this.operationalControls, id, 'Control');
     if (current.status !== 'Programado') {
-      throw new AdminGoApiError('invalid', 'Solo se puede abrir un control programado.');
+      throw new TrazaFuelApiError('invalid', 'Solo se puede abrir un control programado.');
     }
     const updated: OperationalControl = { ...current, status: 'En ejecución', arrivedAt };
     this.operationalControls = this.operationalControls.map((item) =>
@@ -266,7 +266,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
   ): Promise<{ control: OperationalControl; incident: Incident | null }> {
     const current = this.requireEntity(this.operationalControls, id, 'Control');
     if (current.status === 'Cerrado') {
-      throw new AdminGoApiError('invalid', 'El control ya está cerrado.');
+      throw new TrazaFuelApiError('invalid', 'El control ya está cerrado.');
     }
     const at = this.nowIso();
     const balance = current.initialVolume + draft.receivedVolume - draft.dispatchedVolume;
@@ -301,7 +301,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
 
   async createUser(draft: UserDraft): Promise<User> {
     if (this.users.some((user) => user.username === draft.username)) {
-      throw new AdminGoApiError('invalid', `El usuario «${draft.username}» ya existe.`);
+      throw new TrazaFuelApiError('invalid', `El usuario «${draft.username}» ya existe.`);
     }
     this.requireEntity(this.companies, draft.companyId, 'Empresa');
     const user: User = { id: this.nextId('usr'), ...draft };
@@ -313,7 +313,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
     const current = this.requireEntity(this.users, id, 'Usuario');
     if (patch.username && patch.username !== current.username) {
       if (this.users.some((user) => user.username === patch.username && user.id !== id)) {
-        throw new AdminGoApiError('invalid', `El usuario «${patch.username}» ya existe.`);
+        throw new TrazaFuelApiError('invalid', `El usuario «${patch.username}» ya existe.`);
       }
     }
     const updated: User = { ...current, ...patch };
@@ -323,7 +323,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
 
   async createRequirement(draft: RequirementDraft): Promise<Requirement> {
     if (this.requirements.some((requirement) => requirement.code === draft.code)) {
-      throw new AdminGoApiError('invalid', `El requisito «${draft.code}» ya existe.`);
+      throw new TrazaFuelApiError('invalid', `El requisito «${draft.code}» ya existe.`);
     }
     const requirement: Requirement = { id: this.nextId('req'), ...draft };
     this.requirements = [...this.requirements, requirement];
@@ -409,7 +409,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
 
   // ── Interno ───────────────────────────────────────────────────────
 
-  private snapshot(): AdminGoDataset {
+  private snapshot(): TrazaFuelDataset {
     return clone({
       companies: this.companies,
       products: this.products,
@@ -527,9 +527,9 @@ export class InMemoryAdminGoApi extends AdminGoApi {
     const year = new Date(DATASET_DATE_ISO).getFullYear();
     const prefix = OPERATION_CODE_PREFIX[type];
     const existing = this.operations.filter((operation) =>
-      operation.code.startsWith(`AG-${prefix}-`),
+      operation.code.startsWith(`TF-${prefix}-`),
     );
-    return `AG-${prefix}-${year}-${String(existing.length + 1).padStart(6, '0')}`;
+    return `TF-${prefix}-${year}-${String(existing.length + 1).padStart(6, '0')}`;
   }
 
   private nextId(prefix: string): string {
@@ -550,7 +550,7 @@ export class InMemoryAdminGoApi extends AdminGoApi {
   ): T {
     const found = collection.find((item) => item.id === id);
     if (!found) {
-      throw new AdminGoApiError('not-found', `${label} no encontrado: ${id}.`);
+      throw new TrazaFuelApiError('not-found', `${label} no encontrado: ${id}.`);
     }
     return found;
   }

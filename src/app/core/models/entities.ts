@@ -137,7 +137,7 @@ export interface Driver extends BaseEntity {
 
 /* ── Operaciones y trazabilidad (§12, §13) ─────────────────────────── */
 export interface Operation extends BaseEntity {
-  /** Identificador único, p. ej. AG-DI-2026-000001. */
+  /** Identificador único, p. ej. TF-DI-2026-000001. */
   code: string;
   type: OperationType;
   status: OperationStatus;

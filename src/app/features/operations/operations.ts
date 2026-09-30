@@ -8,7 +8,7 @@ import {
   OperationType,
 } from '@core/models/enums';
 import { Operation } from '@core/models/entities';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime, formatLiters, formatPercent } from '@shared/util/format';
 import { toneForOperationStatus } from '@shared/util/status';
@@ -28,7 +28,7 @@ import { toneForOperationStatus } from '@shared/util/status';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Operations {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   private readonly forms = inject(FormBuilder);
 
   protected readonly statuses = OPERATION_STATUSES;

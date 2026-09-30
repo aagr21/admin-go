@@ -1,4 +1,4 @@
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import {
   AgDocument,
   Alert,
@@ -559,7 +559,7 @@ export interface ReportDefinition {
   /** Texto del botón de exportación en la UI. */
   formats: ('pdf' | 'xlsx')[];
   /** Construye el reporte a partir del estado actual. */
-  build: (store: AdminGoStore, options: ReportOptions) => ReportData;
+  build: (store: TrazaFuelStore, options: ReportOptions) => ReportData;
 }
 
 /** Umbrales/configuración que afectan a los reportes (§14). */

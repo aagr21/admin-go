@@ -7,7 +7,7 @@ import { NavGroup } from '../layout/navigation';
  * el backend será la fuente de verdad de los permisos.
  */
 export const ROLE_MODULES: Record<UserRole, readonly string[]> = {
-  'Superadministrador AdminGo': [
+  'Superadministrador TrazaFuel': [
     'dashboard',
     'operations',
     'controls',
@@ -60,7 +60,7 @@ export const ROLE_MODULES: Record<UserRole, readonly string[]> = {
     'settings',
   ],
   // Coordina controles de campo y seguimiento.
-  'Supervisor operativo AdminGo': [
+  'Supervisor operativo TrazaFuel': [
     'dashboard',
     'operations',
     'controls',

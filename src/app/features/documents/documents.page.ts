@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DOCUMENT_STATUSES, DocumentStatus } from '@core/models/enums';
 import { AgDocument } from '@core/models/entities';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDate } from '@shared/util/format';
 import { toneForDocumentStatus } from '@shared/util/status';
@@ -370,7 +370,7 @@ interface PickedFile {
   `,
 })
 export class DocumentsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   private readonly forms = inject(FormBuilder);
 
   protected readonly statuses = DOCUMENT_STATUSES;

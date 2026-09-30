@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthStore } from '@core/auth/auth.store';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { CONTROL_SHIFTS, CONTROL_STATUSES, ControlShift, ControlStatus } from '@core/models/enums';
 import { OperationalControl } from '@core/models/entities';
 import { StatusBadge } from '@shared/ui/status-badge';
@@ -11,7 +11,7 @@ import { toneForControlStatus } from '@shared/util/status';
 /**
  * Pantalla de Control Operativo de Planta (§11) y ciclo de vida del §10.
  *
- * Es el servicio central de AdminGo: el supervisor programa el control, registra
+ * Es el servicio central de TrazaFuel: el supervisor programa el control, registra
  * su llegada, verifica en campo y lo cierra generando el informe. Antes solo
  * existía el modelo de datos, sin ninguna forma de operarlo.
  */
@@ -23,7 +23,7 @@ import { toneForControlStatus } from '@shared/util/status';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControlsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   private readonly auth = inject(AuthStore);
   private readonly forms = inject(FormBuilder);
 
@@ -53,7 +53,7 @@ export class ControlsPage {
       .filter(
         (user) =>
           user.active &&
-          (user.role === 'Supervisor operativo AdminGo' || user.role === 'Operador de campo'),
+          (user.role === 'Supervisor operativo TrazaFuel' || user.role === 'Operador de campo'),
       ),
   );
 

@@ -1,15 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-import { provideAdminGoApi } from '@core/api/api.provider';
-import { AdminGoStore } from './admin-go.store';
+import { provideTrazaFuelApi } from '@core/api/api.provider';
+import { TrazaFuelStore } from './traza-fuel.store';
 
-describe('AdminGoStore', () => {
-  let store: AdminGoStore;
+describe('TrazaFuelStore', () => {
+  let store: TrazaFuelStore;
 
   beforeEach(async () => {
     // Sesión de Superadministrador: ámbito nacional, sin acotar por empresa.
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    store = TestBed.inject(TrazaFuelStore);
     await store.load();
   });
 
@@ -45,9 +45,9 @@ describe('AdminGoStore', () => {
   });
 
   it('resuelve operaciones por su identificador único (§12)', () => {
-    const operation = store.operationByCode('AG-DI-2026-000001');
-    expect(operation?.code).toBe('AG-DI-2026-000001');
-    expect(store.operationByCode('AG-DI-2026-999999')).toBeUndefined();
+    const operation = store.operationByCode('TF-DI-2026-000001');
+    expect(operation?.code).toBe('TF-DI-2026-000001');
+    expect(store.operationByCode('TF-DI-2026-999999')).toBeUndefined();
   });
 
   it('asocia evidencias y alertas a sus entidades (§13, §25)', () => {
@@ -58,13 +58,13 @@ describe('AdminGoStore', () => {
   });
 });
 
-describe('AdminGoStore · fuente única del estado documental (§15)', () => {
-  let store: AdminGoStore;
+describe('TrazaFuelStore · fuente única del estado documental (§15)', () => {
+  let store: TrazaFuelStore;
 
   beforeEach(async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    store = TestBed.inject(TrazaFuelStore);
     await store.load();
   });
 
@@ -89,11 +89,11 @@ describe('AdminGoStore · fuente única del estado documental (§15)', () => {
   });
 });
 
-describe('AdminGoStore · aislamiento por empresa (§29)', () => {
+describe('TrazaFuelStore · aislamiento por empresa (§29)', () => {
   it('un administrador de cliente solo ve datos de su empresa', async () => {
-    sessionStorage.setItem('admingo.session', 'usr-2'); // Administrador cliente · cmp-1
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    const store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-2'); // Administrador cliente · cmp-1
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    const store = TestBed.inject(TrazaFuelStore);
     await store.load();
 
     expect(store.companies().map((company) => company.id)).toEqual(['cmp-1']);
@@ -105,10 +105,10 @@ describe('AdminGoStore · aislamiento por empresa (§29)', () => {
     expect(store.stations().every((station) => station.companyId === 'cmp-1')).toBe(true);
   });
 
-  it('el personal de AdminGo conserva la visión nacional de las 16 plantas', async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1'); // Superadministrador · cmp-0
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    const store = TestBed.inject(AdminGoStore);
+  it('el personal de TrazaFuel conserva la visión nacional de las 16 plantas', async () => {
+    sessionStorage.setItem('trazafuel.session', 'usr-1'); // Superadministrador · cmp-0
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    const store = TestBed.inject(TrazaFuelStore);
     await store.load();
 
     expect(store.scope().global).toBe(true);
@@ -116,13 +116,13 @@ describe('AdminGoStore · aislamiento por empresa (§29)', () => {
   });
 });
 
-describe('AdminGoStore · ciclo de control operativo (§10, §11)', () => {
-  let store: AdminGoStore;
+describe('TrazaFuelStore · ciclo de control operativo (§10, §11)', () => {
+  let store: TrazaFuelStore;
 
   beforeEach(async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    store = TestBed.inject(TrazaFuelStore);
     await store.load();
   });
 
@@ -176,11 +176,11 @@ describe('AdminGoStore · ciclo de control operativo (§10, §11)', () => {
   });
 });
 
-describe('AdminGoStore · alertas derivadas por reglas (§25)', () => {
+describe('TrazaFuelStore · alertas derivadas por reglas (§25)', () => {
   it('genera alertas documentales a partir del umbral, no de datos fijos', async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    const store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    const store = TestBed.inject(TrazaFuelStore);
     await store.load();
 
     const ruleAlerts = store.alerts().filter((alert) => alert.source === 'regla');
@@ -195,9 +195,9 @@ describe('AdminGoStore · alertas derivadas por reglas (§25)', () => {
   });
 
   it('conserva el estado de una alerta atendida al recalcular las reglas', async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    const store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    const store = TestBed.inject(TrazaFuelStore);
     await store.load();
 
     const alert = store.alerts().find((item) => item.source === 'regla');
@@ -209,13 +209,13 @@ describe('AdminGoStore · alertas derivadas por reglas (§25)', () => {
   });
 });
 
-describe('AdminGoStore · escritura y auditoría (§12, §15, §27)', () => {
-  let store: AdminGoStore;
+describe('TrazaFuelStore · escritura y auditoría (§12, §15, §27)', () => {
+  let store: TrazaFuelStore;
 
   beforeEach(async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    store = TestBed.inject(TrazaFuelStore);
     await store.load();
   });
 
@@ -239,7 +239,7 @@ describe('AdminGoStore · escritura y auditoría (§12, §15, §27)', () => {
       scheduledAt: '2026-09-21T08:00:00',
     });
 
-    expect(operation.code).toMatch(/^AG-DP-2026-\d{6}$/);
+    expect(operation.code).toMatch(/^TF-DP-2026-\d{6}$/);
     expect(store.operations()).toHaveLength(before + 1);
     expect(store.operationByCode(operation.code)).toBeTruthy();
     const entry = store.auditLogs().find((log) => log.entityRef === operation.type);
@@ -308,7 +308,7 @@ describe('AdminGoStore · escritura y auditoría (§12, §15, §27)', () => {
       store.createUser({
         username: 'admin',
         fullName: 'Repetido',
-        email: 'repetido@admingo.bo',
+        email: 'repetido@trazafuel.bo',
         role: 'Auditor',
         companyId: 'cmp-0',
         active: true,
@@ -344,11 +344,11 @@ describe('AdminGoStore · escritura y auditoría (§12, §15, §27)', () => {
   });
 });
 
-describe('AdminGoStore · permisos por acción (§6)', () => {
+describe('TrazaFuelStore · permisos por acción (§6)', () => {
   it('el Auditor puede consultar y exportar, pero no modificar', async () => {
-    sessionStorage.setItem('admingo.session', 'usr-8'); // auditor.01
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    const store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-8'); // auditor.01
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    const store = TestBed.inject(TrazaFuelStore);
     await store.load();
 
     expect(store.can('read')).toBe(true);
@@ -359,9 +359,9 @@ describe('AdminGoStore · permisos por acción (§6)', () => {
   });
 
   it('el Superadministrador puede configurar, cerrar y validar', async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
-    TestBed.configureTestingModule({ providers: [provideAdminGoApi()] });
-    const store = TestBed.inject(AdminGoStore);
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
+    TestBed.configureTestingModule({ providers: [provideTrazaFuelApi()] });
+    const store = TestBed.inject(TrazaFuelStore);
     await store.load();
 
     expect(store.can('configure')).toBe(true);

@@ -1,15 +1,15 @@
 import { Provider } from '@angular/core';
-import { AdminGoApi } from './admin-go.api';
-import { InMemoryAdminGoApi } from './in-memory-admin-go.api';
+import { TrazaFuelApi } from './traza-fuel.api';
+import { InMemoryTrazaFuelApi } from './in-memory-traza-fuel.api';
 
 /**
  * Punto único de sustitución del origen de datos (§29, §31).
  *
- * Mientras no exista backend se inyecta `InMemoryAdminGoApi`. El día que lo
- * haya, basta con implementar `HttpAdminGoApi extends AdminGoApi` —con
+ * Mientras no exista backend se inyecta `InMemoryTrazaFuelApi`. El día que lo
+ * haya, basta con implementar `HttpTrazaFuelApi extends TrazaFuelApi` —con
  * `HttpClient` y las rutas ya documentadas en el contrato— y cambiar esta
  * función. Ninguna pantalla necesita enterarse.
  */
-export function provideAdminGoApi(): Provider {
-  return { provide: AdminGoApi, useClass: InMemoryAdminGoApi };
+export function provideTrazaFuelApi(): Provider {
+  return { provide: TrazaFuelApi, useClass: InMemoryTrazaFuelApi };
 }

@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { AdminGoApi, AdminGoApiError, AdminGoDataset, RuleConfig } from '@core/api/admin-go.api';
+import { TrazaFuelApi, TrazaFuelApiError, TrazaFuelDataset, RuleConfig } from '@core/api/traza-fuel.api';
 import { AuthStore } from '@core/auth/auth.store';
 import { Action, canPerform } from '@core/auth/permissions';
 import { TenantScope, scopedToCompany, tenantScopeOf } from '@core/auth/tenant';
@@ -36,7 +36,7 @@ export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
 /**
  * Estado central de la Torre de Control (§8).
  *
- * Todo dato entra por `AdminGoApi`: el store no conoce el dataset de
+ * Todo dato entra por `TrazaFuelApi`: el store no conoce el dataset de
  * demostración, así que sustituir la implementación por la HTTP no le afecta.
  *
  * Dos responsabilidades transversales viven aquí:
@@ -45,11 +45,11 @@ export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
  * - **Auditoría** (§27): cada escritura registra el cambio campo a campo.
  */
 @Injectable({ providedIn: 'root' })
-export class AdminGoStore {
-  private readonly api = inject(AdminGoApi);
+export class TrazaFuelStore {
+  private readonly api = inject(TrazaFuelApi);
   private readonly auth = inject(AuthStore);
 
-  private readonly dataset = signal<AdminGoDataset | null>(null);
+  private readonly dataset = signal<TrazaFuelDataset | null>(null);
   readonly status = signal<LoadStatus>('idle');
   readonly error = signal<string | null>(null);
   /** `true` mientras hay una escritura en curso: la UI bloquea acciones. */
@@ -327,7 +327,7 @@ export class AdminGoStore {
   }
 
   // ── Escrituras ─────────────────────────────────────────────────────
-  async createOperation(draft: Parameters<AdminGoApi['createOperation']>[0]): Promise<Operation> {
+  async createOperation(draft: Parameters<TrazaFuelApi['createOperation']>[0]): Promise<Operation> {
     return this.commit(
       () => this.api.createOperation(draft),
       'Operación',
@@ -338,7 +338,7 @@ export class AdminGoStore {
 
   async updateOperation(
     id: string,
-    draft: Parameters<AdminGoApi['updateOperation']>[1],
+    draft: Parameters<TrazaFuelApi['updateOperation']>[1],
   ): Promise<Operation> {
     const before = this.operationById(id);
     return this.commit(
@@ -350,7 +350,7 @@ export class AdminGoStore {
     );
   }
 
-  async createDocument(draft: Parameters<AdminGoApi['createDocument']>[0]): Promise<AgDocument> {
+  async createDocument(draft: Parameters<TrazaFuelApi['createDocument']>[0]): Promise<AgDocument> {
     return this.commit(
       () => this.api.createDocument(draft),
       'Documento',
@@ -361,7 +361,7 @@ export class AdminGoStore {
 
   async addDocumentVersion(
     id: string,
-    draft: Parameters<AdminGoApi['addDocumentVersion']>[1],
+    draft: Parameters<TrazaFuelApi['addDocumentVersion']>[1],
   ): Promise<AgDocument> {
     const before = this.documentById(id);
     return this.commit(
@@ -374,7 +374,7 @@ export class AdminGoStore {
   }
 
   async createControl(
-    draft: Parameters<AdminGoApi['createControl']>[0],
+    draft: Parameters<TrazaFuelApi['createControl']>[0],
   ): Promise<OperationalControl> {
     return this.commit(
       () => this.api.createControl(draft),
@@ -398,7 +398,7 @@ export class AdminGoStore {
   /** Cierra el control, genera informe y, si procede, abre incidencia (§10). */
   async closeControl(
     id: string,
-    draft: Parameters<AdminGoApi['closeControl']>[1],
+    draft: Parameters<TrazaFuelApi['closeControl']>[1],
   ): Promise<OperationalControl> {
     const before = this.controlById(id);
     return this.commit(
@@ -410,7 +410,7 @@ export class AdminGoStore {
     );
   }
 
-  async createUser(draft: Parameters<AdminGoApi['createUser']>[0]): Promise<User> {
+  async createUser(draft: Parameters<TrazaFuelApi['createUser']>[0]): Promise<User> {
     return this.commit(
       () => this.api.createUser(draft),
       'Usuario',
@@ -419,7 +419,7 @@ export class AdminGoStore {
     );
   }
 
-  async updateUser(id: string, patch: Parameters<AdminGoApi['updateUser']>[1]): Promise<User> {
+  async updateUser(id: string, patch: Parameters<TrazaFuelApi['updateUser']>[1]): Promise<User> {
     const before = this.userById(id);
     return this.commit(
       () => this.api.updateUser(id, patch),
@@ -431,7 +431,7 @@ export class AdminGoStore {
   }
 
   async createRequirement(
-    draft: Parameters<AdminGoApi['createRequirement']>[0],
+    draft: Parameters<TrazaFuelApi['createRequirement']>[0],
   ): Promise<Requirement> {
     return this.commit(
       () => this.api.createRequirement(draft),
@@ -443,7 +443,7 @@ export class AdminGoStore {
 
   async updateRequirement(
     id: string,
-    patch: Parameters<AdminGoApi['updateRequirement']>[1],
+    patch: Parameters<TrazaFuelApi['updateRequirement']>[1],
   ): Promise<Requirement> {
     const before = this.requirements().find((requirement) => requirement.id === id);
     return this.commit(
@@ -455,7 +455,7 @@ export class AdminGoStore {
     );
   }
 
-  async createEvidence(draft: Parameters<AdminGoApi['createEvidence']>[0]): Promise<Evidence> {
+  async createEvidence(draft: Parameters<TrazaFuelApi['createEvidence']>[0]): Promise<Evidence> {
     return this.commit(
       () => this.api.createEvidence(draft),
       'Evidencia',
@@ -484,7 +484,7 @@ export class AdminGoStore {
   async validateDeclaration(id: string): Promise<Declaration> {
     const declaration = this.declarations().find((item) => item.id === id);
     if (!declaration) {
-      throw new AdminGoApiError('not-found', `Declaración no encontrada: ${id}.`);
+      throw new TrazaFuelApiError('not-found', `Declaración no encontrada: ${id}.`);
     }
     const level = complianceLevelOf(this.declarationFindings(declaration));
     this.error.set(null);
@@ -637,7 +637,7 @@ function describeChanges(before: object, after: object): FieldChange[] {
 }
 
 function describeError(error: unknown): string {
-  if (error instanceof AdminGoApiError) {
+  if (error instanceof TrazaFuelApiError) {
     return error.message;
   }
   return error instanceof Error ? error.message : 'Error inesperado en la capa de datos.';

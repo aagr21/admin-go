@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { ReportData, ReportExportService } from '@shared/services/report-export.service';
 import { REPORT_DEFS, ReportOptions } from './report-builders';
 
@@ -47,7 +47,7 @@ import { REPORT_DEFS, ReportOptions } from './report-builders';
         <p class="ag-card__title">Notas de generación</p>
         <p class="ag-card__sub">
           Los archivos se generan en el navegador y su nombre incluye la fecha real de descarga
-          (AG-&lt;reporte&gt;-&lt;fecha&gt;). El reporte de diferencias volumétricas aplica el
+          (TF-&lt;reporte&gt;-&lt;fecha&gt;). El reporte de diferencias volumétricas aplica el
           umbral configurado en Configuración (§14) y los vencimientos documentales usan los días de
           aviso definidos allí.
         </p>
@@ -91,7 +91,7 @@ import { REPORT_DEFS, ReportOptions } from './report-builders';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   private readonly exporter = inject(ReportExportService);
 
   protected readonly defs = REPORT_DEFS;

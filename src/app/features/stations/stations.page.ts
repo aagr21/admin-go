@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatLiters } from '@shared/util/format';
 import { labelForPlantStatus, toneForPlantStatus } from '@shared/util/status';
@@ -75,7 +75,7 @@ import { labelForPlantStatus, toneForPlantStatus } from '@shared/util/status';
   `,
 })
 export class StationsPage {
-  protected readonly stations = inject(AdminGoStore).stations;
+  protected readonly stations = inject(TrazaFuelStore).stations;
   protected readonly formatLiters = formatLiters;
   protected readonly labelForPlantStatus = labelForPlantStatus;
   protected readonly toneForPlantStatus = toneForPlantStatus;

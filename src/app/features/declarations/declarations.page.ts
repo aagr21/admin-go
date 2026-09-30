@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { Declaration } from '@core/models/entities';
 import { ValidationFinding } from '@core/rules/validation';
 import { StatusBadge } from '@shared/ui/status-badge';
@@ -286,7 +286,7 @@ import {
   `,
 })
 export class DeclarationsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   protected readonly declarations = this.store.declarations;
   protected readonly formatLiters = formatLiters;

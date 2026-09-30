@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideAdminGoApi } from '@core/api/api.provider';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { provideTrazaFuelApi } from '@core/api/api.provider';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { Shell } from './shell';
 
 /** Simula el ancho de pantalla que consulta el componente al pulsar el botón. */
@@ -22,12 +22,12 @@ describe('Shell · navegación adaptable', () => {
   let fixture: ComponentFixture<Shell>;
 
   beforeEach(async () => {
-    sessionStorage.setItem('admingo.session', 'usr-1');
+    sessionStorage.setItem('trazafuel.session', 'usr-1');
     await TestBed.configureTestingModule({
       imports: [Shell],
-      providers: [provideRouter([]), provideAdminGoApi()],
+      providers: [provideRouter([]), provideTrazaFuelApi()],
     }).compileComponents();
-    await TestBed.inject(AdminGoStore).load();
+    await TestBed.inject(TrazaFuelStore).load();
     fixture = TestBed.createComponent(Shell);
     fixture.detectChanges();
   });

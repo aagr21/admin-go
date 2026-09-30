@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { formatDateTime } from '@shared/util/format';
 import { toneForQualityStatus } from '@shared/util/status';
@@ -62,7 +62,7 @@ import { toneForQualityStatus } from '@shared/util/status';
   `,
 })
 export class QualityPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
   protected readonly controls = this.store.qualityControls;
   protected readonly formatDateTime = formatDateTime;
   protected readonly toneForQualityStatus = toneForQualityStatus;

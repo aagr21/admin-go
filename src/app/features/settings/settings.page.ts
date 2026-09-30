@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 
 /**
  * Módulo Configuración — parámetros y reglas configurables (§14).
@@ -165,7 +165,7 @@ import { AdminGoStore } from '@core/services/admin-go.store';
   `,
 })
 export class SettingsPage {
-  private readonly store = inject(AdminGoStore);
+  private readonly store = inject(TrazaFuelStore);
 
   protected readonly maxDifference = this.store.maxVolumeDifferencePercent;
   protected readonly warningDays = this.store.documentWarningDays;

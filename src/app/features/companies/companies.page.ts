@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AdminGoStore } from '@core/services/admin-go.store';
+import { TrazaFuelStore } from '@core/services/traza-fuel.store';
 import { StatusBadge } from '@shared/ui/status-badge';
 
 /** Módulo Empresas — clientes y datos maestros (§7). */
@@ -54,5 +54,5 @@ import { StatusBadge } from '@shared/ui/status-badge';
   `,
 })
 export class CompaniesPage {
-  protected readonly companies = inject(AdminGoStore).companies;
+  protected readonly companies = inject(TrazaFuelStore).companies;
 }
