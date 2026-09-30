@@ -23,8 +23,8 @@
   gap: 0.75rem;
   height: 100dvh;
   padding: 1rem 0.75rem;
-  background: linear-gradient(180deg, #0b3d66 0%, #0a3457 100%);
-  color: #dbe6f1;
+  background: linear-gradient(180deg, #000013 0%, #001531 50%, #002252 100%);
+  color: #f4f8fb;
   overflow-y: auto;
 }
 
@@ -36,16 +36,10 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.brand__mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: #0f9d9d;
-  color: #04202a;
-  font-weight: 800;
-  font-size: 0.95rem;
+.brand__logo {
+  width: 80px;
+  height: auto;
+  object-fit: contain;
   flex: none;
 }
 
@@ -112,8 +106,8 @@
 }
 
 .nav__link--active {
-  background: #0f9d9d;
-  color: #03252b;
+  background: #03b3ff;
+  color: #000013;
   font-weight: 600;
 }
 

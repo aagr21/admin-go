@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthStore, DEMO_PASSWORD } from '@core/auth/auth.store';
+import { LoadingService } from '@core/services/loading.service';
 import { USERS } from '@core/data/mock-data';
 
 /**
@@ -16,6 +17,10 @@ const DEMO_USERS = USERS.filter((user) => user.active).map(({ username, role }) 
  * Pantalla de acceso (P1 §33): valida credenciales contra el dataset demo y
  * vuelve al destino solicitado antes del redirect del `authGuard`. Cuando
  * exista backend (§30) el submit llamará a la API sin cambiar esta pantalla.
+ *
+ * La transición login → dashboard muestra un splash global con el logo
+ * (controlado por `LoadingService`) para que el cambio de ruta se sienta
+ * intencional y no un salto seco.
  */
 @Component({
   selector: 'app-login',
@@ -27,6 +32,7 @@ export class LoginPage {
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly loading = inject(LoadingService);
 
   protected readonly username = signal('');
   protected readonly password = signal('');
@@ -37,7 +43,7 @@ export class LoginPage {
 
   constructor() {
     if (this.auth.isAuthenticated()) {
-      void this.router.navigateByUrl(this.returnUrl);
+      this.redirect();
     }
   }
 
@@ -60,10 +66,19 @@ export class LoginPage {
     event.preventDefault();
     const result = this.auth.login(this.username(), this.password());
     if (result.ok) {
-      void this.router.navigateByUrl(this.returnUrl);
+      this.redirect();
       return;
     }
-    this.error.set(result.error ?? 'Credenciales inválidas.');
+    this.error.set(result.error ?? 'Credenciales invalidas.');
+  }
+
+  /** Navega al destino post-login mostrando el splash de transición. */
+  private redirect(): void {
+    this.loading.show();
+    // Simula la carga de la sesión (3s) para que el splash sea perceptible.
+    setTimeout(() => {
+      void this.router.navigateByUrl(this.returnUrl);
+    }, 3000);
   }
 
   /** Destino post-login: solo rutas internas (evita open redirect). */
