@@ -34,9 +34,7 @@ import { Subscription, filter } from 'rxjs';
       z-index: 9999;
       display: grid;
       place-items: center;
-      background:
-        radial-gradient(1100px 500px at 15% -10%, rgba(3, 179, 255, 0.15), transparent 60%),
-        linear-gradient(160deg, #000013 0%, #001531 50%, #002252 100%);
+      background: #0a1628;
       animation: splash-fade-in 0.2s ease-out;
     }
 
@@ -44,21 +42,19 @@ import { Subscription, filter } from 'rxjs';
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.5rem;
     }
 
     .splash-overlay__logo {
       width: 280px;
       height: auto;
       object-fit: contain;
-      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
-      animation: splash-pulse 1.6s ease-in-out infinite;
     }
 
     .splash-overlay__spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid rgba(3, 179, 255, 0.25);
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
       border-top-color: #03b3ff;
       border-radius: 50%;
       animation: splash-spin 0.8s linear infinite;
@@ -66,10 +62,10 @@ import { Subscription, filter } from 'rxjs';
 
     .splash-overlay__text {
       margin: 0;
-      font-size: 0.85rem;
-      font-weight: 500;
+      font-size: 0.9rem;
+      font-weight: 600;
       letter-spacing: 0.04em;
-      color: #f4f8fb;
+      color: #ffffff;
     }
 
     @keyframes splash-fade-in {
@@ -86,18 +82,6 @@ import { Subscription, filter } from 'rxjs';
         transform: rotate(360deg);
       }
     }
-
-    @keyframes splash-pulse {
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.04);
-        opacity: 0.92;
-      }
-    }
   `,
 })
 export class SplashOverlay implements OnInit, OnDestroy {
@@ -108,19 +92,16 @@ export class SplashOverlay implements OnInit, OnDestroy {
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    // Oculta el splash cuando la navegación termina y el splash está visible.
     this.routerSub = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(() => {
         if (this.visible()) {
-          // Pequeño retardo para que el dashboard se renderice antes de ocultar.
           setTimeout(() => this.loading.hide(), 150);
         }
       });
   }
 
   ngOnInit(): void {
-    // Seguridad: si algo falla, ocultar tras 3s máximo.
     this.hideTimeout = setTimeout(() => this.loading.hide(), 3000);
   }
 
